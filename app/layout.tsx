@@ -6,7 +6,6 @@ import './globals.css';
 const newsreader = Newsreader({
   subsets: ['latin'],
   variable: '--font-display',
-  style: ['normal', 'italic'],
 });
 
 export const metadata: Metadata = {

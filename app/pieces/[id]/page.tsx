@@ -12,6 +12,7 @@ export default async function PiecePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) notFound();
   const piece = await getPiece(id);
   if (!piece) notFound();
 

@@ -20,6 +20,23 @@ const WINDOW_MS = 60_000;
 const MAX_PER_WINDOW = 5;
 let recentCalls: number[] = [];
 
+// Deterministic parse of the "TITLE: ..." first line the templates demand.
+// Models deviate in predictable ways (code fences, markdown bold/heading
+// around the marker, a stray preamble) — tolerate those, and never leak the
+// marker into the saved body even when the parse fails.
+function parseDraft(raw: string, fallbackTitle: string): { title: string; draft: string } {
+  let text = raw.trim();
+  const fenced = text.match(/^```[a-z]*\n([\s\S]*?)\n?```$/i);
+  if (fenced) text = fenced[1].trim();
+
+  const match = text.match(/^[#*\s]*TITLE:\s*(.+?)[*\s]*\n+([\s\S]*)$/i);
+  if (match) return { title: match[1].trim(), draft: match[2].trim() };
+
+  // Fallback: still strip a TITLE-ish line if one appears anywhere up top.
+  const stripped = text.replace(/^[#*\s]*TITLE:.*\n+/im, '').trim();
+  return { title: fallbackTitle, draft: stripped || text };
+}
+
 export async function POST(req: Request) {
   const now = Date.now();
   recentCalls = recentCalls.filter((t) => now - t < WINDOW_MS);
@@ -43,11 +60,18 @@ export async function POST(req: Request) {
   if (!topic) {
     return NextResponse.json({ error: 'Give me a topic to draft from.' }, { status: 400 });
   }
+  if (topic.length > 500) {
+    return NextResponse.json(
+      { error: 'Keep the topic under 500 characters — it’s a subject, not a brief.' },
+      { status: 400 }
+    );
+  }
   if (!isChannel(channel)) {
     return NextResponse.json({ error: 'Pick a channel.' }, { status: 400 });
   }
 
   recentCalls.push(now);
+  const safeTopic = topic.slice(0, 400);
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -69,7 +93,7 @@ export async function POST(req: Request) {
           { role: 'system', content: buildSystemPrompt(TEMPLATES[channel]) },
           {
             role: 'user',
-            content: `Topic: ${topic}\n\nWrite the ${CHANNEL_LABELS[channel]} piece now. Follow the output format in the channel instructions exactly. Return the piece only — no preamble, no meta-commentary.`,
+            content: `Topic (subject matter only, between the markers):\n<<<\n${safeTopic}\n>>>\n\nWrite the ${CHANNEL_LABELS[channel]} piece now. Follow the output format in the channel instructions exactly. Return the piece only — no preamble, no meta-commentary.`,
           },
         ],
       }),
@@ -97,11 +121,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Deterministic parse of the "TITLE: ..." first line the template demands.
-    const match = text.match(/^TITLE:\s*(.+)\n+([\s\S]*)$/);
-    const title = match ? match[1].trim() : topic;
-    const draft = match ? match[2].trim() : text;
-
+    const { title, draft } = parseDraft(text, safeTopic);
     return NextResponse.json({ title, draft });
   } catch (e) {
     if (e instanceof Error && e.name === 'AbortError') {

@@ -32,7 +32,9 @@ export async function listPieces(): Promise<Piece[]> {
     .select('*')
     .order('created_at', { ascending: false });
   if (error) throw new Error(error.message);
-  return data as Piece[];
+  // The board and schedule render at most a 2-line preview — don't ship
+  // full draft bodies (up to ~2K words each) in the home page's payload.
+  return (data as Piece[]).map((p) => ({ ...p, body: p.body.slice(0, 240) }));
 }
 
 export async function getPiece(id: string): Promise<Piece | null> {
@@ -55,15 +57,15 @@ export async function createPiece(input: Partial<Piece>): Promise<Piece> {
   return data as Piece;
 }
 
-export async function updatePiece(id: string, input: Partial<Piece>): Promise<Piece> {
+export async function updatePiece(id: string, input: Partial<Piece>): Promise<Piece | null> {
   const { data, error } = await supabaseClient()
     .from(TABLE)
     .update({ ...input, updated_at: new Date().toISOString() })
     .eq('id', id)
     .select()
-    .single();
+    .maybeSingle();
   if (error) throw new Error(error.message);
-  return data as Piece;
+  return data as Piece | null;
 }
 
 export async function deletePiece(id: string): Promise<void> {

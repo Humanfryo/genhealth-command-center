@@ -6,10 +6,8 @@ export async function GET() {
   try {
     return NextResponse.json(await listPieces());
   } catch (e) {
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : 'Failed to load pieces' },
-      { status: 500 }
-    );
+    console.error('GET /api/pieces failed:', e);
+    return NextResponse.json({ error: 'Failed to load pieces. Retry.' }, { status: 500 });
   }
 }
 
@@ -23,19 +21,28 @@ export async function POST(req: Request) {
     if (!isChannel(body.channel)) {
       return NextResponse.json({ error: 'Invalid channel' }, { status: 400 });
     }
+    const scheduled_date =
+      typeof body.scheduled_date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(body.scheduled_date)
+        ? body.scheduled_date
+        : null;
+    const status = isStatus(body.status) ? body.status : 'draft';
+    if (status === 'scheduled' && !scheduled_date) {
+      return NextResponse.json(
+        { error: 'A scheduled piece needs a date (YYYY-MM-DD).' },
+        { status: 400 }
+      );
+    }
     const piece = await createPiece({
       title,
       channel: body.channel,
-      status: isStatus(body.status) ? body.status : 'draft',
+      status,
       body: typeof body.body === 'string' ? body.body : '',
       topic: typeof body.topic === 'string' ? body.topic : null,
-      scheduled_date: body.scheduled_date ?? null,
+      scheduled_date,
     });
     return NextResponse.json(piece, { status: 201 });
   } catch (e) {
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : 'Failed to create piece' },
-      { status: 500 }
-    );
+    console.error('POST /api/pieces failed:', e);
+    return NextResponse.json({ error: 'Failed to create piece. Retry.' }, { status: 500 });
   }
 }

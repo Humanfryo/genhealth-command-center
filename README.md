@@ -38,6 +38,20 @@ Plus a banned-phrases list ("revolutionize," "seamless," "in today's fast-paced 
 
 Why this architecture: voice stays consistent because the rules are code, not vibes; numbers can't be hallucinated because they're allowlisted; and rebranding the tool for a different company is a one-file swap. The LLM is invoked in exactly one route (`app/api/generate/route.ts`) and does exactly one job. Everything else is deterministic CRUD.
 
+## Voice check (the spec, pointed backwards)
+
+The voice spec started write-only: it constrained what the AI generates. The **Voice check** on every piece's edit page points the same spec the other way — it audits *any* text, including content the tool never generated:
+
+- **Banned phrases** — flags anything on the `BANNED_PHRASES` list.
+- **Unverified numbers** — extracts every dollar figure, percentage, and large number, and flags any that don't appear verbatim in the company fact sheet. A hallucinated "$1.4M" or a misremembered "97%" gets caught before it ships to an audience of skeptical healthcare operators.
+- **Stale claims** — GenHealth's voice runs on regulatory countdowns, which means the copy rots on a schedule. The check computes against the real clock: "3 years to competitive bidding" gets flagged once it isn't, and the "free through July 2026" offer gets flagged the day it expires.
+
+Deliberately **no LLM in this path** ([`lib/lint.ts`](lib/lint.ts)): every flag is deterministic, so the marketer can trust it completely. An advisory AI pass against the 12 voice rules is the natural next layer — but the trustworthy core comes first.
+
+## Known tradeoff: the endpoints are public
+
+This deployment has no login because the reviewers of this assessment need to click Generate without friction. That means the write endpoints are public: anyone with the URL could add or delete pieces, and the generate route spends real (rate-limited, topic-capped) API credits. For a real deployment, step one is Supabase Auth (the DB layer is already deny-all, so it's additive) or Vercel deployment protection. Choosing not to hide this tradeoff is part of the tool's thesis: honesty is the brand.
+
 ## Architecture notes
 
 - **Data:** one Postgres table (`mcc_content_pieces`), RLS deny-all, accessed only through `lib/db.ts` (marked `server-only`).
@@ -55,7 +69,7 @@ All three were AI-drafted in this tool, then human-edited — which is the workf
 
 ## Next with more time
 
-Auth (Supabase Auth), a real calendar once content volume earns it, streaming drafts, per-piece revision history, shared-store rate limiting, and a "voice check" button that lints any pasted text against the banned list and voice rules.
+Multi-variant generation (three drafts varying the opening lever — stat, concession, countdown); AI-suggested topics driven by the regulatory calendar already in the fact sheet; one-click repurposing (blog outline → LinkedIn + email); an advisory LLM layer on the voice check; auth (Supabase Auth) unlocking a claims-review gate; streaming drafts; revision history; shared-store rate limiting; a real calendar once content volume earns it.
 
 ## Run locally
 

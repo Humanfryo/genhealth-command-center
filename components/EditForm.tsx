@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Piece, Channel, Status } from '@/lib/types';
 import { CHANNELS, CHANNEL_LABELS, STATUSES, STATUS_LABELS } from '@/lib/types';
+import { VoiceCheck } from './VoiceCheck';
 
 export function EditForm({ piece }: { piece: Piece }) {
   const router = useRouter();
@@ -18,6 +19,10 @@ export function EditForm({ piece }: { piece: Piece }) {
   const [saved, setSaved] = useState(false);
 
   async function save() {
+    if (status === 'scheduled' && !scheduledDate) {
+      setError('A scheduled piece needs a date — pick one or set the status back to draft.');
+      return;
+    }
     setSaving(true);
     setError(null);
     setSaved(false);
@@ -68,11 +73,12 @@ export function EditForm({ piece }: { piece: Piece }) {
   }
 
   return (
+    <>
     <div className="rounded-xl border border-slate-200 bg-white p-5">
       <label className="mb-1 block text-sm font-medium text-[#1A1D21]">Title</label>
       <input
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={(e) => { setTitle(e.target.value); setSaved(false); }}
         className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
       />
 
@@ -81,7 +87,7 @@ export function EditForm({ piece }: { piece: Piece }) {
           <label className="mb-1 block text-sm font-medium text-[#1A1D21]">Channel</label>
           <select
             value={channel}
-            onChange={(e) => setChannel(e.target.value as Channel)}
+            onChange={(e) => { setChannel(e.target.value as Channel); setSaved(false); }}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
           >
             {CHANNELS.map((c) => (
@@ -95,7 +101,7 @@ export function EditForm({ piece }: { piece: Piece }) {
           <label className="mb-1 block text-sm font-medium text-[#1A1D21]">Status</label>
           <select
             value={status}
-            onChange={(e) => setStatus(e.target.value as Status)}
+            onChange={(e) => { setStatus(e.target.value as Status); setSaved(false); }}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
           >
             {STATUSES.map((s) => (
@@ -112,7 +118,7 @@ export function EditForm({ piece }: { piece: Piece }) {
           <input
             type="date"
             value={scheduledDate}
-            onChange={(e) => setScheduledDate(e.target.value)}
+            onChange={(e) => { setScheduledDate(e.target.value); setSaved(false); }}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
           />
         </div>
@@ -121,7 +127,7 @@ export function EditForm({ piece }: { piece: Piece }) {
       <label className="mb-1 mt-4 block text-sm font-medium text-[#1A1D21]">Body</label>
       <textarea
         value={body}
-        onChange={(e) => setBody(e.target.value)}
+        onChange={(e) => { setBody(e.target.value); setSaved(false); }}
         rows={18}
         className="w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm leading-relaxed outline-none focus:border-teal-500"
       />
@@ -154,5 +160,7 @@ export function EditForm({ piece }: { piece: Piece }) {
         </button>
       </div>
     </div>
+    <VoiceCheck body={body} />
+    </>
   );
 }

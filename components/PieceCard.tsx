@@ -17,11 +17,14 @@ function formatDate(d: string | null): string | null {
 }
 
 // Default a newly scheduled piece one week out; the exact date is editable
-// on the piece page.
+// on the piece page. Built from local date parts — toISOString() converts to
+// UTC and lands a day off for evening users west of Greenwich.
 function defaultScheduleDate(): string {
   const d = new Date();
   d.setDate(d.getDate() + 7);
-  return d.toISOString().slice(0, 10);
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${d.getFullYear()}-${mm}-${dd}`;
 }
 
 export function PieceCard({ piece }: { piece: Piece }) {
