@@ -84,11 +84,14 @@ export async function POST() {
       status: 'ok',
     });
 
-    // Deterministic parse: strip an accidental code fence, then JSON.parse.
-    const cleaned = text.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/, '').trim();
+    // Deterministic parse: models sometimes wrap the JSON in prose or fences —
+    // extract the outermost array slice and parse that.
+    const start = text.indexOf('[');
+    const end = text.lastIndexOf(']');
     let topics;
     try {
-      topics = JSON.parse(cleaned);
+      if (start === -1 || end <= start) throw new Error('no array found');
+      topics = JSON.parse(text.slice(start, end + 1));
     } catch {
       return NextResponse.json(
         { error: 'The scan came back malformed. Retry.' },
