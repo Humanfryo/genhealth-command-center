@@ -2,7 +2,7 @@
 
 A small, working marketing tool built as a 4-hour assessment: a content library, AI first drafts that sound like GenHealth, and a pipeline + schedule view — deployed, persistent, and holding three pieces GenHealth could publish as-is.
 
-**Live:** _(URL added at deploy)_ · **Stack:** Next.js App Router + TypeScript + Tailwind, Supabase Postgres, Claude API (claude-sonnet-5), Vercel.
+**Live:** _(URL added at deploy)_ · **Stack:** Next.js App Router + TypeScript + Tailwind, Supabase Postgres, claude-sonnet-5 via OpenRouter, Vercel.
 
 ## What this is
 
@@ -42,8 +42,8 @@ Why this architecture: voice stays consistent because the rules are code, not vi
 
 - **Data:** one Postgres table (`mcc_content_pieces`), RLS deny-all, accessed only through `lib/db.ts` (marked `server-only`).
 - **Pattern:** server components read the database directly; client components mutate through API routes; one LLM touchpoint.
-- **Costs:** ~$0.02 per draft (≈2K input + ≈1K output tokens on claude-sonnet-5). The in-process rate limit is per-instance — a demo-scale honesty; production would use a shared store (Upstash/KV).
-- **Timeouts:** 45s SDK timeout, one retry, `maxDuration = 60` on the generate route.
+- **Costs:** ~$0.015 per draft (≈2K input + ≈1K output tokens on claude-sonnet-5 via OpenRouter at $2/$10 per MTok). Model choice was deliberate: voice quality is the scored criterion, so the strongest writer at Sonnet-class pricing beats saving half a cent per draft on a smaller model. The in-process rate limit is per-instance — a demo-scale honesty; production would use a shared store (Upstash/KV).
+- **Timeouts:** 45s abort on the model call, `maxDuration = 60` on the generate route.
 
 ## The three pieces inside
 
