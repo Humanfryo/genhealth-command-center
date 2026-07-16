@@ -2,7 +2,7 @@
 
 A small, working marketing tool built as a 4-hour assessment: a content library, AI first drafts that sound like GenHealth, and a pipeline + schedule view — deployed, persistent, and holding three pieces GenHealth could publish as-is.
 
-**Live:** _(URL added at deploy)_ · **Stack:** Next.js App Router + TypeScript + Tailwind, Supabase Postgres, claude-sonnet-5 via OpenRouter, Vercel.
+**Live:** https://genhealth-command-center.vercel.app · **Stack:** Next.js App Router + TypeScript + Tailwind, Supabase Postgres, claude-sonnet-5 via OpenRouter, Vercel.
 
 ## What this is
 

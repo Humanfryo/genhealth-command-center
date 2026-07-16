@@ -83,7 +83,7 @@ Guidehealth case study (at-risk MSO): up to 60% reduction in utilization managem
 
 Regulatory dates — state these precisely:
 - CMS-0057-F (Interoperability and Prior Authorization Final Rule): operational prior-auth provisions (decision timeframes, specific denial reasons) begin January 1, 2026; the four FHIR APIs (Patient Access, Provider Access, Payer-to-Payer, Prior Authorization) are due January 1, 2027. The rule legally binds impacted payers (Medicare Advantage, Medicaid/CHIP, QHP issuers) — NOT DME suppliers. When writing for DME audiences, frame it as what payers' new APIs change downstream for providers, never as a compliance mandate on DMEs.
-- DMEPOS Competitive Bidding: nationwide competition takes effect January 1, 2028 — tighter pricing methodology, annual accreditation, new product categories. Countdown framing is fine ("You have 3 years").
+- DMEPOS Competitive Bidding: nationwide competition takes effect January 1, 2028 — tighter pricing methodology, annual accreditation, new product categories. Countdown framing works, but compute the remaining time from today's date (as of July 2026, that's about 18 months — do not reuse the "3 years" line from older GenHealth posts).
 
 Workflow Audit (the lead magnet): a single 60-minute session plus a custom 12-page report measuring minutes-per-transaction, touches, failure rate, and lag time across referral, prior-auth, eligibility, and DME order workflows — plus a 90-day roadmap and honest guidance on what not to automate. Free through the end of July 2026.`;
 
