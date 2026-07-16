@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Channel } from '@/lib/types';
 import { CHANNELS, CHANNEL_LABELS } from '@/lib/types';
+import { TopicSuggestions } from './TopicSuggestions';
 
 const SPINNER_LINES = [
   'Drafting in GenHealth’s voice…',
@@ -81,6 +82,13 @@ export function GenerateForm() {
 
   return (
     <div className="flex flex-col gap-5">
+      <TopicSuggestions
+        onPick={(t, c) => {
+          setTopic(t);
+          if (c) setChannel(c);
+          setError(null);
+        }}
+      />
       <div
         className="rounded-[16px] border border-[var(--line)] bg-[var(--card)] p-[22px]"
         style={{ boxShadow: '0 1px 2px rgba(0,0,0,.03)' }}

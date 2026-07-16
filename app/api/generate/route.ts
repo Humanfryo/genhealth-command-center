@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { buildSystemPrompt } from '@/lib/voice';
 import { TEMPLATES } from '@/lib/templates';
 import { isChannel, CHANNEL_LABELS } from '@/lib/types';
+import { logGeneration } from '@/lib/db';
 
 // Drafts can take a while; Vercel Pro allows extending the function window.
 export const maxDuration = 60;
@@ -72,6 +73,7 @@ export async function POST(req: Request) {
 
   recentCalls.push(now);
   const safeTopic = topic.slice(0, 400);
+  const started = Date.now();
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -109,11 +111,30 @@ export async function POST(req: Request) {
             : status >= 500
               ? 'The model is briefly overloaded. Retry in a moment.'
               : `Generation failed (${status}). Retry, or tweak the topic.`;
+      await logGeneration({
+        kind: 'draft', channel, topic: safeTopic, model: MODEL,
+        duration_ms: Date.now() - started, status: 'error', error: `HTTP ${status}`,
+      });
       return NextResponse.json({ error: friendly }, { status: status >= 500 ? 502 : status });
     }
 
     const data = await res.json();
     const text: string = (data.choices?.[0]?.message?.content ?? '').trim();
+
+    // OpenRouter returns authoritative usage + USD cost on every response.
+    await logGeneration({
+      kind: 'draft',
+      channel,
+      topic: safeTopic,
+      model: MODEL,
+      prompt_tokens: data.usage?.prompt_tokens ?? null,
+      completion_tokens: data.usage?.completion_tokens ?? null,
+      cost_usd: data.usage?.cost ?? null,
+      duration_ms: Date.now() - started,
+      status: text ? 'ok' : 'error',
+      error: text ? null : 'empty completion',
+    });
+
     if (!text) {
       return NextResponse.json(
         { error: 'The model returned an empty draft. Retry.' },
@@ -124,7 +145,13 @@ export async function POST(req: Request) {
     const { title, draft } = parseDraft(text, safeTopic);
     return NextResponse.json({ title, draft });
   } catch (e) {
-    if (e instanceof Error && e.name === 'AbortError') {
+    const timedOut = e instanceof Error && e.name === 'AbortError';
+    await logGeneration({
+      kind: 'draft', channel, topic: safeTopic, model: MODEL,
+      duration_ms: Date.now() - started, status: 'error',
+      error: timedOut ? 'timeout 45s' : 'connection lost',
+    });
+    if (timedOut) {
       return NextResponse.json(
         { error: 'Generation timed out after 45s. Retry — your topic is still in the form.' },
         { status: 504 }

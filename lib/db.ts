@@ -72,3 +72,40 @@ export async function deletePiece(id: string): Promise<void> {
   const { error } = await supabaseClient().from(TABLE).delete().eq('id', id);
   if (error) throw new Error(error.message);
 }
+
+// --- Generation log (cost accounting) ---------------------------------------
+
+export interface GenerationLog {
+  id: string;
+  created_at: string;
+  kind: 'draft' | 'topic_scan';
+  channel: string | null;
+  topic: string | null;
+  model: string;
+  prompt_tokens: number | null;
+  completion_tokens: number | null;
+  cost_usd: number | null;
+  duration_ms: number | null;
+  status: 'ok' | 'error';
+  error: string | null;
+}
+
+// Fire-and-forget: a failed log line must never fail the user's generation.
+export async function logGeneration(entry: Partial<GenerationLog>): Promise<void> {
+  try {
+    const { error } = await supabaseClient().from('mcc_generations').insert(entry);
+    if (error) console.error('logGeneration failed:', error.message);
+  } catch (e) {
+    console.error('logGeneration failed:', e);
+  }
+}
+
+export async function listGenerations(): Promise<GenerationLog[]> {
+  const { data, error } = await supabaseClient()
+    .from('mcc_generations')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(200);
+  if (error) throw new Error(error.message);
+  return data as GenerationLog[];
+}

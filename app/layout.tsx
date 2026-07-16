@@ -51,6 +51,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/" className="btn-ghost px-3 py-[9px] text-[13.5px]">
                 Library
               </Link>
+              <Link href="/admin" className="btn-ghost px-3 py-[9px] text-[13.5px]">
+                Admin
+              </Link>
               <Link href="/new" className="btn-primary px-4 py-[9px] text-[13.5px]">
                 + New draft
               </Link>
