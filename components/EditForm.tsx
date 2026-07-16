@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { Piece, Channel, Status } from '@/lib/types';
 import { CHANNELS, CHANNEL_LABELS, STATUSES, STATUS_LABELS } from '@/lib/types';
+import { ChannelBadge, StatusBadge } from './StatusBadge';
 import { VoiceCheck } from './VoiceCheck';
 import { PiecePreview } from './PiecePreview';
 
@@ -18,7 +20,10 @@ export function EditForm({ piece }: { piece: Piece }) {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
-  const [view, setView] = useState<'edit' | 'preview'>('edit');
+  const [view, setView] = useState<'write' | 'preview'>('write');
+
+  const words = body.trim() ? body.trim().split(/\s+/).length : 0;
+  const chars = body.length;
 
   async function save() {
     if (status === 'scheduled' && !scheduledDate) {
@@ -74,116 +79,168 @@ export function EditForm({ piece }: { piece: Piece }) {
     }
   }
 
+  const touch = () => setSaved(false);
+
   return (
-    <>
-    <div className="rounded-xl border border-slate-200 bg-white p-5">
-      <label className="mb-1 block text-sm font-medium text-[#1A1D21]">Title</label>
-      <input
-        value={title}
-        onChange={(e) => { setTitle(e.target.value); setSaved(false); }}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-      />
-
-      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div>
-          <label className="mb-1 block text-sm font-medium text-[#1A1D21]">Channel</label>
-          <select
-            value={channel}
-            onChange={(e) => { setChannel(e.target.value as Channel); setSaved(false); }}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-          >
-            {CHANNELS.map((c) => (
-              <option key={c} value={c}>
-                {CHANNEL_LABELS[c]}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium text-[#1A1D21]">Status</label>
-          <select
-            value={status}
-            onChange={(e) => { setStatus(e.target.value as Status); setSaved(false); }}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-          >
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {STATUS_LABELS[s]}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium text-[#1A1D21]">
-            Scheduled date
-          </label>
-          <input
-            type="date"
-            value={scheduledDate}
-            onChange={(e) => { setScheduledDate(e.target.value); setSaved(false); }}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-500"
-          />
+    <div>
+      {/* Top row */}
+      <div className="mb-3 flex items-center justify-between">
+        <Link href="/" className="btn-ghost px-2 py-1.5 text-[13.5px]">
+          ← Back to library
+        </Link>
+        <div className="flex items-center gap-2">
+          <ChannelBadge channel={channel} />
+          <StatusBadge status={status} />
         </div>
       </div>
+      {piece.topic && (
+        <p className="mb-4 text-[12.5px] text-[var(--muted)]">
+          Generated from topic: <span className="text-[var(--ink)]">“{piece.topic}”</span>
+        </p>
+      )}
 
-      <div className="mt-4 flex items-center justify-between">
-        <label className="block text-sm font-medium text-[#1A1D21]">Body</label>
-        <div className="flex gap-1 rounded-lg border border-slate-200 p-0.5">
-          {(['edit', 'preview'] as const).map((v) => (
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_296px]">
+        {/* Main column */}
+        <div className="flex flex-col gap-5">
+          <div>
+            <label className="micro-label mb-1.5 block">Title</label>
+            <input
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                touch();
+              }}
+              placeholder="Untitled piece"
+              className="input w-full rounded-[12px] px-4 py-3.5 text-[19px] font-bold tracking-[-0.02em]"
+            />
+          </div>
+
+          {/* Body panel */}
+          <div className="overflow-hidden rounded-[14px] border border-[var(--line)] bg-[var(--card)]">
+            <div className="flex items-center justify-between border-b border-[var(--line)] bg-[var(--soft)] px-[14px] py-[11px]">
+              <div className="flex gap-0.5 rounded-[9px] border border-[var(--line)] bg-white p-[2px]">
+                {(['write', 'preview'] as const).map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => setView(v)}
+                    className={`rounded-[7px] px-3.5 py-1.5 text-[12.5px] font-semibold transition-colors duration-150 ${
+                      view === v ? 'bg-[var(--accent)] text-white' : 'text-[var(--muted)]'
+                    }`}
+                  >
+                    {v === 'write' ? 'Write' : 'Preview'}
+                  </button>
+                ))}
+              </div>
+              <span
+                className="text-[12px] text-[var(--muted)]"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                {words} words · {chars} chars
+              </span>
+            </div>
+            {view === 'write' ? (
+              <textarea
+                value={body}
+                onChange={(e) => {
+                  setBody(e.target.value);
+                  touch();
+                }}
+                placeholder="Write your draft…"
+                className="min-h-[480px] w-full resize-y border-0 p-5 text-[13px] leading-[1.65] outline-none"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              />
+            ) : (
+              <div className="max-h-[640px] min-h-[480px] overflow-y-auto px-[26px] py-6">
+                <PiecePreview channel={channel} title={title} body={body} />
+              </div>
+            )}
+          </div>
+
+          {error && (
+            <p className="rounded-[10px] border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {error}
+            </p>
+          )}
+          {saved && !error && (
+            <p className="rounded-[10px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+              Saved.
+            </p>
+          )}
+        </div>
+
+        {/* Sidebar */}
+        <div className="flex flex-col gap-3.5 self-start lg:sticky lg:top-[82px]">
+          <div className="flex flex-col gap-[15px] rounded-[14px] border border-[var(--line)] bg-[var(--card)] p-[18px]">
+            <div>
+              <label className="micro-label mb-1.5 block">Channel</label>
+              <select
+                value={channel}
+                onChange={(e) => {
+                  setChannel(e.target.value as Channel);
+                  touch();
+                }}
+                className="input w-full px-3 py-2.5 text-[13.5px]"
+              >
+                {CHANNELS.map((c) => (
+                  <option key={c} value={c}>
+                    {CHANNEL_LABELS[c]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="micro-label mb-1.5 block">Status</label>
+              <select
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value as Status);
+                  touch();
+                }}
+                className="input w-full px-3 py-2.5 text-[13.5px]"
+              >
+                {STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {STATUS_LABELS[s]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="micro-label mb-1.5 block">Scheduled date</label>
+              <input
+                type="date"
+                value={scheduledDate}
+                onChange={(e) => {
+                  setScheduledDate(e.target.value);
+                  touch();
+                }}
+                className="input w-full px-3 py-2.5 text-[13.5px]"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-[9px]">
             <button
-              key={v}
-              onClick={() => setView(v)}
-              className={`rounded-md px-3 py-1 text-xs font-medium ${
-                view === v ? 'bg-[#0D9488] text-white' : 'text-slate-600 hover:text-teal-700'
-              }`}
+              onClick={save}
+              disabled={saving || !title.trim()}
+              className="btn-primary w-full rounded-[11px] py-3 text-[14px]"
             >
-              {v === 'edit' ? 'Edit' : 'Preview'}
+              {saving ? 'Saving…' : 'Save changes'}
             </button>
-          ))}
-        </div>
-      </div>
-      {view === 'edit' ? (
-        <textarea
-          value={body}
-          onChange={(e) => { setBody(e.target.value); setSaved(false); }}
-          rows={18}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm leading-relaxed outline-none focus:border-teal-500"
-        />
-      ) : (
-        <div className="mt-1">
-          <PiecePreview channel={channel} title={title} body={body} />
-        </div>
-      )}
+            <button
+              onClick={remove}
+              disabled={deleting}
+              className="w-full rounded-[11px] border py-3 text-[14px] font-semibold text-[#dc2626] transition-colors duration-150 hover:bg-red-50 disabled:opacity-40"
+              style={{ borderColor: '#f3c9c9' }}
+            >
+              {deleting ? 'Deleting…' : 'Delete'}
+            </button>
+          </div>
 
-      {error && (
-        <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}
-        </p>
-      )}
-      {saved && !error && (
-        <p className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-          Saved.
-        </p>
-      )}
-
-      <div className="mt-4 flex items-center justify-between">
-        <button
-          onClick={save}
-          disabled={saving || !title.trim()}
-          className="rounded-lg bg-[#0D9488] px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-40"
-        >
-          {saving ? 'Saving…' : 'Save changes'}
-        </button>
-        <button
-          onClick={remove}
-          disabled={deleting}
-          className="rounded-lg border border-red-200 px-4 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-40"
-        >
-          {deleting ? 'Deleting…' : 'Delete'}
-        </button>
+          <VoiceCheck body={body} />
+        </div>
       </div>
     </div>
-    <VoiceCheck body={body} />
-    </>
   );
 }

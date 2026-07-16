@@ -1,11 +1,18 @@
 import type { Metadata } from 'next';
-import { Newsreader } from 'next/font/google';
+import { Hanken_Grotesk, JetBrains_Mono } from 'next/font/google';
 import Link from 'next/link';
 import './globals.css';
 
-const newsreader = Newsreader({
+const hanken = Hanken_Grotesk({
   subsets: ['latin'],
-  variable: '--font-display',
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-ui',
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-mono',
 });
 
 export const metadata: Metadata = {
@@ -17,33 +24,41 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${newsreader.variable} min-h-screen bg-[#FAFAF7] text-[#1A1D21] antialiased`}>
-        <header className="border-b border-slate-200 bg-white">
-          <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-            <Link href="/" className="flex items-baseline gap-2">
+      <body className={`${hanken.variable} ${jetbrains.variable} min-h-screen`}>
+        <header
+          className="sticky top-0 z-30 border-b border-[var(--line)] px-[30px] py-[14px]"
+          style={{
+            background: 'color-mix(in oklab, var(--surface) 82%, #fff)',
+            backdropFilter: 'blur(10px)',
+          }}
+        >
+          <div className="mx-auto flex max-w-[1200px] items-center justify-between">
+            <Link href="/" className="flex items-center gap-3">
               <span
-                className="text-lg font-semibold tracking-tight"
-                style={{ fontFamily: 'var(--font-display)' }}
+                className="flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-[var(--accent)]"
+                style={{ boxShadow: '0 2px 10px color-mix(in oklab, var(--accent) 34%, transparent)' }}
               >
-                GenHealth
+                <span className="h-[11px] w-[11px] rounded-[3px] bg-white" />
               </span>
-              <span className="text-sm text-slate-500">Marketing Command Center</span>
+              <span className="flex items-center gap-3">
+                <span className="text-[17px] font-extrabold tracking-[-0.02em]">GenHealth</span>
+                <span className="border-l border-[var(--line)] pl-3 text-[12.5px] font-medium text-[var(--muted)]">
+                  Marketing Command Center
+                </span>
+              </span>
             </Link>
-            <nav className="flex items-center gap-4">
-              <Link href="/" className="text-sm text-slate-600 hover:text-teal-700">
+            <nav className="flex items-center gap-2">
+              <Link href="/" className="btn-ghost px-3 py-[9px] text-[13.5px]">
                 Library
               </Link>
-              <Link
-                href="/new"
-                className="rounded-lg bg-[#0D9488] px-3 py-1.5 text-sm font-medium text-white hover:bg-teal-700"
-              >
-                New draft
+              <Link href="/new" className="btn-primary px-4 py-[9px] text-[13.5px]">
+                + New draft
               </Link>
             </nav>
           </div>
         </header>
-        <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
-        <footer className="mx-auto max-w-5xl px-4 pb-8 text-xs text-slate-400">
+        <main className="mx-auto max-w-[1200px] px-[30px] py-8">{children}</main>
+        <footer className="mx-auto max-w-[1200px] px-[30px] pb-8 pt-[52px] text-[12px] text-[var(--muted)]">
           Built as a 4-hour assessment. AI drafts, humans publish.
         </footer>
       </body>

@@ -48,6 +48,10 @@ The voice spec started write-only: it constrained what the AI generates. The **V
 
 Deliberately **no LLM in this path** ([`lib/lint.ts`](lib/lint.ts)): every flag is deterministic, so the marketer can trust it completely. An advisory AI pass against the 12 voice rules is the natural next layer — but the trustworthy core comes first.
 
+## Design
+
+The UI was redesigned from a Claude Design handoff (in [`design_handoff_marketing_command_center/`](design_handoff_marketing_command_center/) — spec + working HTML prototype) and reimplemented in the app's existing stack. The whole interface themes from a single `--accent` CSS variable; type is Hanken Grotesk with JetBrains Mono for dates, counters, and the draft editor. The redesign also added live search, channel filter chips, and a distribution bar to the pipeline board, and moved the editor to a two-column layout with a sticky meta sidebar.
+
 ## Channel preview
 
 Every piece's edit page has an Edit/Preview toggle. Preview renders the body as the artifact it will become: the email's `SUBJECT:`/`PREVIEW:` slots render as an inbox row, the `CTA:` slot becomes the button it maps to in Mailchimp, blog outlines render their markdown, and LinkedIn pieces render as a post card. The markers exist because an email piece is a Mailchimp handoff spec — subject line, preview text, and button label are separate Mailchimp fields, so the tool keeps them as labeled slots instead of losing them in prose. The preview is live against unsaved edits.

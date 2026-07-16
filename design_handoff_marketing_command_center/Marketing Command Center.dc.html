@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0}
+a{color:var(--accent,#0f766e);text-decoration:none}
+a:hover{color:var(--accent,#0f766e);opacity:.8}
+textarea,input,select,button{font-family:inherit}
+::selection{background:color-mix(in oklab,var(--accent,#0f766e) 22%,transparent)}
+.mcc-scroll::-webkit-scrollbar{width:9px;height:9px}
+.mcc-scroll::-webkit-scrollbar-thumb{background:rgba(0,0,0,.14);border-radius:9px}
+</style>
+</helmet>
+<div style="--card:#ffffff;--ink:#191b20;--muted:#71757e;--line:#e8e7e2;--soft:#f2f1ec;--accent:{{ accent }};--surface:{{ surfaceBg }};font-family:'Hanken Grotesk',ui-sans-serif,system-ui,sans-serif;min-height:100vh;background:var(--surface,#f6f5f1);color:var(--ink,#191b20);-webkit-font-smoothing:antialiased">
+
+  <header style="position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 30px;background:color-mix(in oklab,var(--surface,#f6f5f1) 82%,#fff);backdrop-filter:blur(10px);border-bottom:1px solid var(--line,#e8e7e2)">
+    <div style="display:flex;align-items:center;gap:12px;cursor:pointer" onClick="{{ goHome }}">
+      <div style="width:30px;height:30px;border-radius:9px;background:var(--accent,#0f766e);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px color-mix(in oklab,var(--accent,#0f766e) 40%,transparent)">
+        <div style="width:11px;height:11px;border-radius:3px;background:#fff;opacity:.95"></div>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:9px;line-height:1">
+        <span style="font-size:17px;font-weight:800;letter-spacing:-.02em">GenHealth</span>
+        <span style="font-size:12.5px;font-weight:500;color:var(--muted,#71757e);border-left:1px solid var(--line,#e8e7e2);padding-left:9px">Marketing Command Center</span>
+      </div>
+    </div>
+    <nav style="display:flex;align-items:center;gap:8px">
+      <button onClick="{{ goHome }}" style="font-size:13.5px;font-weight:600;color:var(--ink,#191b20);background:transparent;border:0;padding:9px 12px;border-radius:9px;cursor:pointer">Library</button>
+      <button onClick="{{ newDraft }}" style="display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:700;color:#fff;background:var(--accent,#0f766e);border:0;padding:9px 16px;border-radius:10px;cursor:pointer;box-shadow:0 2px 10px color-mix(in oklab,var(--accent,#0f766e) 34%,transparent)" style-hover="filter:brightness(1.06)">
+        <span style="font-size:15px;line-height:1;margin-top:-1px">+</span> New draft
+      </button>
+    </nav>
+  </header>
+
+  <sc-if value="{{ isPipeline }}" hint-placeholder-val="{{ true }}">
+  <main style="max-width:1200px;margin:0 auto;padding:34px 30px 70px">
+
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px">
+      <div>
+        <h1 style="margin:0;font-size:30px;font-weight:800;letter-spacing:-.03em">Pipeline</h1>
+        <p style="margin:6px 0 0;font-size:13.5px;color:var(--muted,#71757e)">{{ summaryLine }}</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div style="position:relative;display:flex;align-items:center">
+          <span style="position:absolute;left:12px;font-size:13px;color:var(--muted,#71757e);pointer-events:none">⌕</span>
+          <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="Search titles &amp; content" style="width:230px;padding:9px 12px 9px 30px;font-size:13px;border:1px solid var(--line,#e8e7e2);border-radius:10px;background:var(--card,#fff);color:var(--ink,#191b20);outline:none" style-focus="border-color:var(--accent,#0f766e);box-shadow:0 0 0 3px color-mix(in oklab,var(--accent,#0f766e) 14%,transparent)">
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:24px">
+      <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+        <button onClick="{{ f.onClick }}" style="font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }}">{{ f.label }}</button>
+      </sc-for>
+    </div>
+
+    <div style="background:var(--card,#fff);border:1px solid var(--line,#e8e7e2);border-radius:16px;padding:20px 22px;margin-bottom:26px;box-shadow:0 1px 2px rgba(0,0,0,.03)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px">
+        <span style="font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted,#71757e)">Distribution</span>
+        <span style="font-size:12.5px;color:var(--muted,#71757e)">{{ totalCount }} pieces</span>
+      </div>
+      <div style="display:flex;height:10px;border-radius:999px;overflow:hidden;background:var(--soft,#f2f1ec);gap:2px">
+        <sc-for list="{{ bars }}" as="b" hint-placeholder-count="3">
+          <div style="width:{{ b.width }};background:{{ b.color }};transition:width .4s ease"></div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:26px;margin-top:14px;flex-wrap:wrap">
+        <sc-for list="{{ stats }}" as="s" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:9px">
+            <span style="width:9px;height:9px;border-radius:3px;background:{{ s.color }}"></span>
+            <span style="font-size:19px;font-weight:800;letter-spacing:-.02em">{{ s.count }}</span>
+            <span style="font-size:13px;color:var(--muted,#71757e)">{{ s.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:start">
+      <sc-for list="{{ columns }}" as="col" hint-placeholder-count="3">
+        <section style="background:var(--soft,#f2f1ec);border:1px solid var(--line,#e8e7e2);border-radius:16px;padding:6px 6px 12px;min-height:220px">
+          <div style="display:flex;align-items:center;gap:9px;padding:13px 14px 12px">
+            <span style="width:8px;height:8px;border-radius:99px;background:{{ col.color }}"></span>
+            <h2 style="margin:0;font-size:14px;font-weight:700;letter-spacing:-.01em">{{ col.label }}</h2>
+            <span style="margin-left:auto;font-size:12px;font-weight:700;color:var(--muted,#71757e);background:var(--card,#fff);border:1px solid var(--line,#e8e7e2);min-width:22px;text-align:center;padding:2px 7px;border-radius:999px">{{ col.count }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;padding:0 8px">
+            <sc-for list="{{ col.items }}" as="c" hint-placeholder-count="1">
+              <article onClick="{{ c.onEdit }}" style="background:var(--card,#fff);border:1px solid var(--line,#e8e7e2);border-radius:13px;padding:14px 14px 12px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.03);transition:transform .14s ease,box-shadow .14s ease,border-color .14s ease" style-hover="transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.08);border-color:color-mix(in oklab,var(--accent,#0f766e) 40%,var(--line,#e8e7e2))">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+                  <span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:{{ c.chBg }};color:{{ c.chColor }}">{{ c.channel }}</span>
+                  <sc-if value="{{ c.date }}">
+                    <span style="font-size:11.5px;font-weight:500;color:var(--muted,#71757e);font-family:'JetBrains Mono',monospace">{{ c.date }}</span>
+                  </sc-if>
+                </div>
+                <h3 style="margin:0 0 7px;font-size:14.5px;font-weight:700;line-height:1.32;letter-spacing:-.01em;text-wrap:pretty">{{ c.title }}</h3>
+                <p style="margin:0 0 12px;font-size:12.5px;line-height:1.5;color:var(--muted,#71757e);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.excerpt }}</p>
+                <div style="display:flex;gap:7px;flex-wrap:wrap;padding-top:11px;border-top:1px solid var(--soft,#f2f1ec)">
+                  <sc-for list="{{ c.moves }}" as="m" hint-placeholder-count="2">
+                    <button onClick="{{ m.onClick }}" style="font-size:11.5px;font-weight:600;color:var(--ink,#191b20);background:var(--soft,#f2f1ec);border:1px solid var(--line,#e8e7e2);padding:5px 10px;border-radius:8px;cursor:pointer" style-hover="background:var(--card,#fff);border-color:{{ m.color }};color:{{ m.color }}">{{ m.label }}</button>
+                  </sc-for>
+                </div>
+              </article>
+            </sc-for>
+            <sc-if value="{{ col.empty }}">
+              <div style="border:1.5px dashed var(--line,#e8e7e2);border-radius:12px;padding:26px 14px;text-align:center;font-size:12.5px;color:var(--muted,#71757e)">{{ col.emptyText }}</div>
+            </sc-if>
+          </div>
+        </section>
+      </sc-for>
+    </div>
+
+    <div style="margin-top:44px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px">
+        <h2 style="margin:0;font-size:22px;font-weight:800;letter-spacing:-.025em">Upcoming schedule</h2>
+        <span style="font-size:12.5px;color:var(--muted,#71757e)">{{ scheduleCountLine }}</span>
+      </div>
+      <sc-if value="{{ hasSchedule }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:22px">
+          <sc-for list="{{ schedule }}" as="g" hint-placeholder-count="2">
+            <div>
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+                <span style="font-size:13px;font-weight:700;color:var(--accent,#0f766e)">{{ g.label }}</span>
+                <span style="flex:1;height:1px;background:var(--line,#e8e7e2)"></span>
+                <span style="font-size:11.5px;color:var(--muted,#71757e);font-family:'JetBrains Mono',monospace">{{ g.rel }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="1">
+                  <div onClick="{{ it.onEdit }}" style="display:flex;align-items:center;gap:14px;background:var(--card,#fff);border:1px solid var(--line,#e8e7e2);border-radius:12px;padding:13px 16px;cursor:pointer;transition:border-color .14s ease,box-shadow .14s ease" style-hover="border-color:color-mix(in oklab,var(--accent,#0f766e) 40%,var(--line,#e8e7e2));box-shadow:0 4px 14px rgba(0,0,0,.05)">
+                    <span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:{{ it.chBg }};color:{{ it.chColor }};white-space:nowrap">{{ it.channel }}</span>
+                    <span style="font-size:14px;font-weight:600;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ it.title }}</span>
+                    <span style="margin-left:auto;font-size:15px;color:var(--muted,#71757e)">→</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noSchedule }}">
+        <div style="border:1.5px dashed var(--line,#e8e7e2);border-radius:14px;padding:34px;text-align:center;font-size:13px;color:var(--muted,#71757e)">Nothing scheduled. Move a draft to Scheduled to see it here.</div>
+      </sc-if>
+    </div>
+
+    <p style="margin:52px 0 0;font-size:12px;color:var(--muted,#71757e)">Built as a 4-hour assessment. AI drafts, humans publish.</p>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ isEditor }}">
+  <main style="max-width:1040px;margin:0 auto;padding:30px 30px 80px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px">
+      <button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:var(--ink,#191b20);background:transparent;border:0;cursor:pointer;padding:0" style-hover="opacity:.7"><span style="font-size:15px">←</span> Back to library</button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:999px;background:{{ ed.chBg }};color:{{ ed.chColor }}">{{ ed.channel }}</span>
+        <span style="font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:999px;background:{{ ed.stBg }};color:{{ ed.stColor }}">{{ ed.statusLabel }}</span>
+      </div>
+    </div>
+
+    <sc-if value="{{ ed.topic }}">
+      <p style="margin:0 0 22px;font-size:12.5px;line-height:1.5;color:var(--muted,#71757e)">Generated from topic: <span style="color:var(--ink,#191b20)">&ldquo;{{ ed.topic }}&rdquo;</span></p>
+    </sc-if>
+
+    <div style="display:grid;grid-template-columns:1fr 296px;gap:24px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div>
+          <label style="display:block;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted,#71757e);margin-bottom:8px">Title</label>
+          <input value="{{ ed.title }}" onChange="{{ onTitle }}" placeholder="Untitled piece" style="width:100%;padding:14px 16px;font-size:19px;font-weight:700;letter-spacing:-.02em;border:1px solid var(--line,#e8e7e2);border-radius:12px;background:var(--card,#fff);color:var(--ink,#191b20);outline:none" style-focus="border-color:var(--accent,#0f766e);box-shadow:0 0 0 3px color-mix(in oklab,var(--accent,#0f766e) 14%,transparent)">
+        </div>
+
+        <div style="background:var(--card,#fff);border:1px solid var(--line,#e8e7e2);border-radius:14px;overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line,#e8e7e2);background:var(--soft,#f2f1ec)">
+            <div style="display:flex;background:var(--card,#fff);border:1px solid var(--line,#e8e7e2);border-radius:9px;padding:2px">
+              <button onClick="{{ setWrite }}" style="font-size:12.5px;font-weight:600;padding:6px 14px;border-radius:7px;cursor:pointer;border:0;background:{{ writeBg }};color:{{ writeColor }}">Write</button>
+              <button onClick="{{ setPreview }}" style="font-size:12.5px;font-weight:600;padding:6px 14px;border-radius:7px;cursor:pointer;border:0;background:{{ previewBg }};color:{{ previewColor }}">Preview</button>
+            </div>
+            <span style="font-size:12px;color:var(--muted,#71757e);font-family:'JetBrains Mono',monospace">{{ wordCount }} words · {{ charCount }} chars</span>
+          </div>
+          <sc-if value="{{ writing }}" hint-placeholder-val="{{ true }}">
+            <textarea class="mcc-scroll" value="{{ ed.body }}" onChange="{{ onBody }}" placeholder="Write your draft in Markdown…" style="display:block;width:100%;min-height:480px;resize:vertical;padding:20px;border:0;outline:none;background:var(--card,#fff);color:var(--ink,#191b20);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65"></textarea>
+          </sc-if>
+          <sc-if value="{{ previewing }}">
+            <div class="mcc-scroll" style="min-height:480px;max-height:640px;overflow:auto;padding:24px 26px">{{ preview }}</div>
+          </sc-if>
+        </div>
+      </div>
+
+      <aside style="position:sticky;top:82px;display:flex;flex-direction:column;gap:14px">
+        <div style="background:var(--card,#fff);border:1px solid var(--line,#e8e7e2);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:15px">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted,#71757e);margin-bottom:7px">Channel</label>
+            <select value="{{ ed.channel }}" onChange="{{ onChannel }}" style="width:100%;padding:10px 12px;font-size:13.5px;font-weight:500;border:1px solid var(--line,#e8e7e2);border-radius:10px;background:var(--card,#fff);color:var(--ink,#191b20);outline:none;cursor:pointer" style-focus="border-color:var(--accent,#0f766e)">
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Blog post">Blog post</option>
+              <option value="Email newsletter">Email newsletter</option>
+              <option value="X / Twitter">X / Twitter</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted,#71757e);margin-bottom:7px">Status</label>
+            <select value="{{ ed.status }}" onChange="{{ onStatus }}" style="width:100%;padding:10px 12px;font-size:13.5px;font-weight:500;border:1px solid var(--line,#e8e7e2);border-radius:10px;background:var(--card,#fff);color:var(--ink,#191b20);outline:none;cursor:pointer" style-focus="border-color:var(--accent,#0f766e)">
+              <option value="draft">Draft</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted,#71757e);margin-bottom:7px">Scheduled date</label>
+            <input type="date" value="{{ ed.date }}" onChange="{{ onDate }}" style="width:100%;padding:10px 12px;font-size:13.5px;border:1px solid var(--line,#e8e7e2);border-radius:10px;background:var(--card,#fff);color:var(--ink,#191b20);outline:none;font-family:'JetBrains Mono',monospace" style-focus="border-color:var(--accent,#0f766e)">
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <button onClick="{{ saveDraft }}" style="width:100%;padding:12px;font-size:14px;font-weight:700;color:#fff;background:var(--accent,#0f766e);border:0;border-radius:11px;cursor:pointer;box-shadow:0 2px 10px color-mix(in oklab,var(--accent,#0f766e) 30%,transparent)" style-hover="filter:brightness(1.06)">{{ saveLabel }}</button>
+          <button onClick="{{ removeDraft }}" style="width:100%;padding:11px;font-size:13.5px;font-weight:600;color:{{ dangerColor }};background:transparent;border:1px solid {{ dangerBorder }};border-radius:11px;cursor:pointer" style-hover="background:color-mix(in oklab,#dc2626 8%,transparent)">{{ deleteLabel }}</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:860},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0f766e&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#0f766e&quot;,&quot;#4338ca&quot;,&quot;#1d4ed8&quot;,&quot;#9333ea&quot;],&quot;section&quot;:&quot;Theme&quot;},&quot;surface&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Warm&quot;,&quot;options&quot;:[&quot;Warm&quot;,&quot;Cool&quot;,&quot;Paper&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Theme&quot;}}">
+class Component extends DCLogic {
+  state = {
+    view: 'pipeline',
+    editingId: null,
+    draft: null,
+    search: '',
+    filter: 'all',
+    preview: false,
+    pieces: [
+      { id:'p1', channel:'LinkedIn', status:'draft', date:'',
+        topic:'The hidden fully-loaded cost of offshore DME intake teams',
+        title:'The Real Cost of Offshore Intake, Per Order',
+        body:"$8-18 an hour looks cheap. Until you build the full model.\n\nOffshore intake, per DME order:\n- Wage: real, but the smallest line\n- Rework from denied claims your team re-keys by hand\n- Management overhead across a 12-hour time gap\n- Turnover, retraining, and the audit risk nobody prices in\n\nWhen you add it all up, \"cheap\" labor is often the most expensive way to run an intake desk. Here's the per-order math." },
+      { id:'p2', channel:'Blog post', status:'scheduled', date:'2026-07-23',
+        topic:'CMS-0057-F for DME providers: what the January 2027 payer API deadline changes downstream at the intake desk',
+        title:"CMS-0057-F and Your Intake Desk: What Payer APIs Change When You're Not the One Regulated",
+        body:"Your compliance team can relax. Your intake desk cannot — because when Medicare Advantage plans, Medicaid/CHIP, and QHP issuers go live with new prior-auth APIs, the paperwork your staff manually chases today shows up differently, faster, and with less patience for your old workarounds.\n\n## What's Actually Changing (And Why It Matters)\n\n- CMS-0057-F legally binds payers, not DME suppliers — no fines land on you. The post says this plainly up front, because getting it wrong costs credibility with every reader who knows better.\n- The operational prior-auth provisions (specific denial reasons, decision timeframes) go live January 1, 2026. The four FHIR APIs — Patient Access, Provider Access, Payer-to-Payer, Prior Authorization — are due January 1, 2027.\n- What changes downstream: payers using Da Vinci FHIR (CRD, DTR, PAS) will push structured determinations and specific denial reasons instead of vague letters. Your intake desk either has systems that read that structured data, or staff manually re-keying it like it's 2019.\n\n## The Timeline, Made Very Concrete\n\nYou have less runway than the headline dates suggest. Start the workflow audit now." },
+      { id:'p3', channel:'Email newsletter', status:'scheduled', date:'2026-07-21',
+        topic:'The 18-month runway to 2028 competitive bidding and why workflow audits start now',
+        title:'Newsletter: 18 months until 2028 bidding (Workflow Audit)',
+        body:"SUBJECT: 18 months until 2028 bidding. Not much time.\nPREVIEW: Nationwide bidding is back — and the winners are auditing workflows today.\n\nHi there,\n\nCompetitive bidding returns in 2028. That sounds far away. It isn't.\n\nThe suppliers who came through the last rounds intact all had one thing in common: they knew their real per-order cost before they had to bid it. Most didn't.\n\n## Your 3-step workflow audit\n\n- Map every touch from referral to paid claim\n- Put a fully-loaded cost on each step\n- Kill or automate the steps that don't survive scrutiny\n\nStart this quarter. Reply if you want the audit template." }
+    ]
+  };
+
+  CH = {
+    'LinkedIn':        { color:'#0a66c2', bg:'#e7f0fb' },
+    'Blog post':       { color:'#0f766e', bg:'#d8efea' },
+    'Email newsletter':{ color:'#7c3aed', bg:'#efe7fd' },
+    'X / Twitter':     { color:'#1f2937', bg:'#eceef1' }
+  };
+  ST = {
+    draft:     { label:'Draft',     color:'#64748b', bg:'#eef1f4' },
+    scheduled: { label:'Scheduled', color:'#c07a00', bg:'#fbf0d7' },
+    published: { label:'Published', color:'#0f9d63', bg:'#dcf3e6' }
+  };
+  DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  DAYSF=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  MONF=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  TODAY='2026-07-16';
+
+  ch(n){ return this.CH[n] || this.CH['Blog post']; }
+  st(k){ return this.ST[k] || this.ST.draft; }
+
+  fmtShort(iso){ if(!iso) return ''; const [y,m,d]=iso.split('-').map(Number); const dt=new Date(y,m-1,d); return this.DAYS[dt.getDay()]+', '+this.MON[m-1]+' '+d; }
+  fmtFull(iso){ const [y,m,d]=iso.split('-').map(Number); const dt=new Date(y,m-1,d); return this.DAYSF[dt.getDay()]+', '+this.MONF[m-1]+' '+d; }
+  relDays(iso){ const [y,m,d]=iso.split('-').map(Number); const a=new Date(y,m-1,d); const [ty,tm,td]=this.TODAY.split('-').map(Number); const t=new Date(ty,tm-1,td); const diff=Math.round((a-t)/86400000); if(diff===0) return 'today'; if(diff<0) return Math.abs(diff)+'d ago'; return 'in '+diff+'d'; }
+  excerpt(body){ const t=(body||'').replace(/^#+\s*/gm,'').replace(/^-\s*/gm,'').split('\n').map(s=>s.trim()).filter(Boolean); return (t[0]||'').slice(0,150); }
+
+  goHome=()=>this.setState({view:'pipeline',draft:null,editingId:null,preview:false});
+  newDraft=()=>this.setState({view:'editor',editingId:'new',preview:false,draft:{id:'new',channel:'Blog post',status:'draft',date:'',topic:'',title:'',body:''}});
+  openEditor=(id)=>{ const p=this.state.pieces.find(x=>x.id===id); if(p) this.setState({view:'editor',editingId:id,preview:false,draft:{...p}}); };
+  onSearch=(e)=>this.setState({search:e.target.value});
+  setFilter=(f)=>this.setState({filter:f});
+  moveStatus=(id,status)=>this.setState(s=>({pieces:s.pieces.map(p=>p.id===id?{...p,status}:p)}));
+
+  upd=(field,val)=>this.setState(s=>({draft:{...s.draft,[field]:val}}));
+  onTitle=(e)=>this.upd('title',e.target.value);
+  onBody=(e)=>this.upd('body',e.target.value);
+  onChannel=(e)=>this.upd('channel',e.target.value);
+  onStatus=(e)=>this.upd('status',e.target.value);
+  onDate=(e)=>this.upd('date',e.target.value);
+
+  saveDraft=()=>{ const d=this.state.draft; if(!d) return; this.setState(s=>{ if(s.editingId==='new'){ const id='p'+(Date.now().toString().slice(-6)); return {pieces:[...s.pieces,{...d,id,title:d.title||'Untitled piece'}],view:'pipeline',draft:null,editingId:null}; } return {pieces:s.pieces.map(p=>p.id===s.editingId?{...d}:p),view:'pipeline',draft:null,editingId:null}; }); };
+  removeDraft=()=>{ this.setState(s=> s.editingId==='new' ? {view:'pipeline',draft:null,editingId:null} : {pieces:s.pieces.filter(p=>p.id!==s.editingId),view:'pipeline',draft:null,editingId:null}); };
+
+  mdHtml(md){
+    const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const lines=(md||'').split('\n'); let out=''; let list=false;
+    const close=()=>{ if(list){out+='</ul>';list=false;} };
+    for(const line of lines){
+      if(/^##\s+/.test(line)){ close(); out+='<h3 style="margin:22px 0 8px;font-size:16px;font-weight:800;letter-spacing:-.01em;color:#191b20">'+esc(line.replace(/^##\s+/,''))+'</h3>'; continue; }
+      if(/^#\s+/.test(line)){ close(); out+='<h2 style="margin:22px 0 10px;font-size:20px;font-weight:800;letter-spacing:-.02em;color:#191b20">'+esc(line.replace(/^#\s+/,''))+'</h2>'; continue; }
+      if(/^-\s+/.test(line)){ if(!list){out+='<ul style="margin:8px 0;padding-left:20px;display:flex;flex-direction:column;gap:6px">';list=true;} out+='<li style="font-size:14px;line-height:1.6;color:#33363d">'+esc(line.replace(/^-\s+/,''))+'</li>'; continue; }
+      if(line.trim()===''){ close(); continue; }
+      close(); out+='<p style="margin:0 0 12px;font-size:14px;line-height:1.68;color:#33363d">'+esc(line)+'</p>';
+    }
+    close(); return out||'<p style="color:#71757e;font-size:13px">Nothing to preview yet.</p>';
+  }
+
+  renderVals(){
+    const accent=this.props.accent||'#0f766e';
+    const surfMap={ Warm:'#f6f5f1', Cool:'#f3f6f6', Paper:'#f7f3ea' };
+    const surfaceBg=surfMap[this.props.surface||'Warm']||'#f6f5f1';
+    const s=this.state;
+    const pieces=s.pieces;
+    const q=(s.search||'').toLowerCase();
+
+    const match=p=> (s.filter==='all'||p.channel===s.filter) && (!q || (p.title+' '+p.body).toLowerCase().includes(q));
+    const visible=pieces.filter(match);
+
+    const filterDefs=[['all','All'],['LinkedIn','LinkedIn'],['Blog post','Blog'],['Email newsletter','Email'],['X / Twitter','X']];
+    const filters=filterDefs.map(([k,label])=>{ const active=s.filter===k; return { label, onClick:()=>this.setFilter(k), bg:active?accent:'transparent', color:active?'#fff':'#71757e', border:active?accent:'var(--line,#e8e7e2)' }; });
+
+    const order=['draft','scheduled','published'];
+    const cardVM=p=>{ const cm=this.ch(p.channel); const others=order.filter(k=>k!==p.status); return {
+      id:p.id, channel:p.channel, chBg:cm.bg, chColor:cm.color, date:this.fmtShort(p.date),
+      title:p.title||'Untitled piece', excerpt:this.excerpt(p.body),
+      onEdit:()=>this.openEditor(p.id),
+      moves:others.map(k=>({ label:'→ '+this.st(k).label, color:this.st(k).color, onClick:(e)=>{ e.stopPropagation(); this.moveStatus(p.id,k); } }))
+    };};
+    const emptyText={draft:'No drafts',scheduled:'Nothing scheduled',published:'Nothing published yet'};
+    const columns=order.map(k=>{ const items=visible.filter(p=>p.status===k).map(cardVM); return { label:this.st(k).label, color:this.st(k).color, count:items.length, items, empty:items.length===0, emptyText:emptyText[k] }; });
+
+    const cnt=k=>pieces.filter(p=>p.status===k).length;
+    const total=pieces.length;
+    const stats=order.map(k=>({ label:this.st(k).label.toLowerCase(), count:cnt(k), color:this.st(k).color }));
+    const bars=order.filter(k=>cnt(k)>0).map(k=>({ width:(cnt(k)/Math.max(total,1)*100)+'%', color:this.st(k).color }));
+
+    const sched=pieces.filter(p=>p.status==='scheduled'&&p.date).sort((a,b)=>a.date<b.date?-1:1);
+    const groups={}; sched.forEach(p=>{ (groups[p.date]=groups[p.date]||[]).push(p); });
+    const schedule=Object.keys(groups).sort().map(date=>({ label:this.fmtFull(date), rel:this.relDays(date), items:groups[date].map(p=>{ const cm=this.ch(p.channel); return { channel:p.channel, chBg:cm.bg, chColor:cm.color, title:p.title, onEdit:()=>this.openEditor(p.id) }; }) }));
+
+    const d=s.draft||{};
+    const cm=this.ch(d.channel); const sm=this.st(d.status);
+    const words=(d.body||'').trim()?(d.body||'').trim().split(/\s+/).length:0;
+    const ed={ channel:d.channel, chBg:cm.bg, chColor:cm.color, statusLabel:sm.label, stBg:sm.bg, stColor:sm.color, topic:d.topic, title:d.title, body:d.body, date:d.date };
+    const isNew=s.editingId==='new';
+
+    return {
+      accent, surfaceBg,
+      goHome:this.goHome, newDraft:this.newDraft,
+      isPipeline:s.view==='pipeline', isEditor:s.view==='editor',
+      search:s.search, onSearch:this.onSearch, filters,
+      summaryLine: total+' pieces in the library · '+cnt('draft')+' in progress',
+      totalCount: total, bars, stats, columns,
+      scheduleCountLine: sched.length+(sched.length===1?' piece':' pieces')+' queued',
+      schedule, hasSchedule:schedule.length>0, noSchedule:schedule.length===0,
+      ed,
+      onTitle:this.onTitle, onBody:this.onBody, onChannel:this.onChannel, onStatus:this.onStatus, onDate:this.onDate,
+      saveDraft:this.saveDraft, removeDraft:this.removeDraft,
+      saveLabel: isNew?'Create piece':'Save changes',
+      deleteLabel: isNew?'Discard':'Delete',
+      dangerColor: isNew?'#71757e':'#dc2626', dangerBorder: isNew?'var(--line,#e8e7e2)':'#f3c9c9',
+      writing:!s.preview, previewing:s.preview,
+      setWrite:()=>this.setState({preview:false}), setPreview:()=>this.setState({preview:true}),
+      writeBg:!s.preview?accent:'transparent', writeColor:!s.preview?'#fff':'#71757e',
+      previewBg:s.preview?accent:'transparent', previewColor:s.preview?'#fff':'#71757e',
+      wordCount:words, charCount:(d.body||'').length,
+      preview: React.createElement('div',{dangerouslySetInnerHTML:{__html:this.mdHtml(d.body)}})
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,11 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { Piece, Status } from '@/lib/types';
 import { STATUS_LABELS } from '@/lib/types';
-import { ChannelBadge } from './StatusBadge';
+import { ChannelBadge, STATUS_COLORS } from './StatusBadge';
 
 function formatDate(d: string | null): string | null {
   if (!d) return null;
@@ -59,24 +58,54 @@ export function PieceCard({ piece }: { piece: Piece }) {
   const date = formatDate(piece.scheduled_date);
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-3 transition-colors hover:border-teal-300">
-      <Link href={`/pieces/${piece.id}`} className="block">
-        <div className="mb-2 flex items-center gap-2">
-          <ChannelBadge channel={piece.channel} />
-          {date && <span className="text-xs text-slate-500">{date}</span>}
-        </div>
-        <h3 className="text-sm font-medium leading-snug text-[#1A1D21]">{piece.title}</h3>
-        {piece.body && (
-          <p className="mt-1 line-clamp-2 text-xs text-slate-500">{piece.body}</p>
+    <div
+      onClick={() => router.push(`/pieces/${piece.id}`)}
+      className="card-hover cursor-pointer rounded-[13px] border border-[var(--line)] bg-[var(--card)] px-[14px] pb-3 pt-[14px]"
+      style={{ boxShadow: '0 1px 2px rgba(0,0,0,.03)' }}
+    >
+      <div className="mb-2 flex items-center justify-between">
+        <ChannelBadge channel={piece.channel} />
+        {date && (
+          <span
+            className="text-[11.5px] text-[var(--muted)]"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            {date}
+          </span>
         )}
-      </Link>
-      <div className="mt-3 flex flex-wrap gap-1.5">
+      </div>
+      <h3
+        className="text-[14.5px] font-bold leading-[1.32] tracking-[-0.01em]"
+        style={{ textWrap: 'pretty' }}
+      >
+        {piece.title}
+      </h3>
+      {piece.body && (
+        <p className="mt-1 line-clamp-2 text-[12.5px] leading-[1.5] text-[var(--muted)]">
+          {piece.body}
+        </p>
+      )}
+      <div className="mt-3 flex flex-wrap gap-1.5 border-t border-[var(--soft)] pt-2.5">
         {targets.map((s) => (
           <button
             key={s}
-            onClick={() => moveTo(s)}
+            onClick={(e) => {
+              e.stopPropagation();
+              moveTo(s);
+            }}
             disabled={busy}
-            className="rounded border border-slate-200 px-2 py-0.5 text-xs text-slate-600 hover:border-teal-400 hover:text-teal-700 disabled:opacity-50"
+            className="rounded-[8px] border border-[var(--line)] bg-[var(--soft)] px-2 py-1 text-[11.5px] font-semibold text-[var(--muted)] transition-colors duration-150 disabled:opacity-50"
+            style={{ ['--tc' as string]: STATUS_COLORS[s].accent }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#fff';
+              e.currentTarget.style.borderColor = STATUS_COLORS[s].accent;
+              e.currentTarget.style.color = STATUS_COLORS[s].accent;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '';
+              e.currentTarget.style.borderColor = '';
+              e.currentTarget.style.color = '';
+            }}
           >
             → {STATUS_LABELS[s]}
           </button>

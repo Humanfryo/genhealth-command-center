@@ -1,13 +1,88 @@
 @import "tailwindcss";
 
-/* This is an internal tool with a single, deliberate light theme —
-   dark-mode auto-inversion would fight the design tokens. */
+/* Design tokens from the Claude Design handoff. The whole UI re-themes from
+   --accent alone — every accent use is the var or a color-mix of it. */
 :root {
   color-scheme: light;
+  --accent: #0f766e;
+  --surface: #f6f5f1;
+  --card: #ffffff;
+  --ink: #191b20;
+  --muted: #71757e;
+  --line: #e8e7e2;
+  --soft: #f2f1ec;
 }
 
 body {
-  background: #fafaf7;
-  color: #1a1d21;
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent) 22%, transparent);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px color-mix(in oklab, var(--accent) 32%, transparent);
+  transition: filter 0.14s ease;
+}
+.btn-primary:hover {
+  filter: brightness(1.06);
+}
+.btn-primary:disabled {
+  opacity: 0.4;
+  filter: none;
+}
+
+.btn-ghost {
+  color: var(--ink);
+  font-weight: 600;
+  border-radius: 9px;
+  transition: opacity 0.14s ease;
+}
+.btn-ghost:hover {
+  opacity: 0.7;
+}
+
+.input {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.14s ease, box-shadow 0.14s ease;
+}
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 14%, transparent);
+}
+
+.micro-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.card-hover {
+  transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--line));
+}
+
+.row-hover {
+  transition: box-shadow 0.14s ease, border-color 0.14s ease;
+}
+.row-hover:hover {
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--line));
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 }
