@@ -78,7 +78,7 @@ export async function deletePiece(id: string): Promise<void> {
 export interface GenerationLog {
   id: string;
   created_at: string;
-  kind: 'draft' | 'topic_scan';
+  kind: 'draft' | 'topic_scan' | 'distill';
   channel: string | null;
   topic: string | null;
   model: string;
@@ -108,4 +108,61 @@ export async function listGenerations(): Promise<GenerationLog[]> {
     .limit(200);
   if (error) throw new Error(error.message);
   return data as GenerationLog[];
+}
+
+// --- Revision tracking (the edit-distill loop's raw signal) ------------------
+
+export interface Revision {
+  id: string;
+  created_at: string;
+  piece_id: string | null;
+  kind: 'ai_draft' | 'human_save';
+  channel: string | null;
+  topic: string | null;
+  title: string | null;
+  body: string;
+}
+
+// Fire-and-forget, like logGeneration: revision capture must never break a save.
+export async function logRevision(entry: Partial<Revision>): Promise<void> {
+  try {
+    const { error } = await supabaseClient().from('mcc_revisions').insert(entry);
+    if (error) console.error('logRevision failed:', error.message);
+  } catch (e) {
+    console.error('logRevision failed:', e);
+  }
+}
+
+export async function listRevisions(): Promise<Revision[]> {
+  const { data, error } = await supabaseClient()
+    .from('mcc_revisions')
+    .select('*')
+    .order('created_at', { ascending: true })
+    .limit(500);
+  if (error) throw new Error(error.message);
+  return data as Revision[];
+}
+
+export interface DistillReport {
+  id: string;
+  created_at: string;
+  model: string;
+  cost_usd: number | null;
+  pairs_analyzed: number;
+  report_md: string;
+}
+
+export async function saveDistillReport(entry: Partial<DistillReport>): Promise<void> {
+  const { error } = await supabaseClient().from('mcc_distill_reports').insert(entry);
+  if (error) throw new Error(error.message);
+}
+
+export async function listDistillReports(): Promise<DistillReport[]> {
+  const { data, error } = await supabaseClient()
+    .from('mcc_distill_reports')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(20);
+  if (error) throw new Error(error.message);
+  return data as DistillReport[];
 }

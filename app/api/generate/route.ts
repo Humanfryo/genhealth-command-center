@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { buildSystemPrompt } from '@/lib/voice';
 import { TEMPLATES } from '@/lib/templates';
 import { isChannel, CHANNEL_LABELS } from '@/lib/types';
-import { logGeneration } from '@/lib/db';
+import { logGeneration, logRevision } from '@/lib/db';
 
 // Drafts can take a while; Vercel Pro allows extending the function window.
 export const maxDuration = 60;
@@ -143,6 +143,10 @@ export async function POST(req: Request) {
     }
 
     const { title, draft } = parseDraft(text, safeTopic);
+
+    // The raw AI draft is the "before" half of the edit-distill loop.
+    await logRevision({ kind: 'ai_draft', channel, topic: safeTopic, title, body: draft });
+
     return NextResponse.json({ title, draft });
   } catch (e) {
     const timedOut = e instanceof Error && e.name === 'AbortError';

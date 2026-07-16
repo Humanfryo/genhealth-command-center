@@ -1,3 +1,9 @@
 {
-  "regions": ["pdx1"]
+  "regions": ["pdx1"],
+  "crons": [
+    {
+      "path": "/api/distill",
+      "schedule": "0 13 * * 1"
+    }
+  ]
 }

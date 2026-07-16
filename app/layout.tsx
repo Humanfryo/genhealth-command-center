@@ -1,12 +1,21 @@
 import type { Metadata } from 'next';
-import { Hanken_Grotesk, JetBrains_Mono } from 'next/font/google';
+import { Lexend, Ibarra_Real_Nova, JetBrains_Mono } from 'next/font/google';
 import Link from 'next/link';
 import './globals.css';
 
-const hanken = Hanken_Grotesk({
+// GenHealth's actual type system, from their production CSS:
+// --sans: Lexend · --serif: Ibarra Real Nova · --mono: JetBrains Mono
+const lexend = Lexend({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-ui',
+});
+
+const ibarra = Ibarra_Real_Nova({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-display',
 });
 
 const jetbrains = JetBrains_Mono({
@@ -24,7 +33,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${hanken.variable} ${jetbrains.variable} min-h-screen`}>
+      <body className={`${lexend.variable} ${ibarra.variable} ${jetbrains.variable} min-h-screen`}>
         <header
           className="sticky top-0 z-30 border-b border-[var(--line)] px-[30px] py-[14px]"
           style={{
@@ -41,7 +50,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <span className="h-[11px] w-[11px] rounded-[3px] bg-white" />
               </span>
               <span className="flex items-center gap-3">
-                <span className="text-[17px] font-extrabold tracking-[-0.02em]">GenHealth</span>
+                <span
+                  className="text-[18px] font-bold tracking-[-0.01em]"
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
+                  GenHealth.ai
+                </span>
                 <span className="border-l border-[var(--line)] pl-3 text-[12.5px] font-medium text-[var(--muted)]">
                   Marketing Command Center
                 </span>

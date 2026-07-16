@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { listPieces, createPiece } from '@/lib/db';
+import { listPieces, createPiece, logRevision } from '@/lib/db';
 import { isChannel, isStatus } from '@/lib/types';
 
 export async function GET() {
@@ -40,6 +40,13 @@ export async function POST(req: Request) {
       topic: typeof body.topic === 'string' ? body.topic : null,
       scheduled_date,
     });
+    // First human-owned state of the piece (already possibly edited in /new).
+    if (piece.body) {
+      await logRevision({
+        kind: 'human_save', piece_id: piece.id, channel: piece.channel,
+        topic: piece.topic, title: piece.title, body: piece.body,
+      });
+    }
     return NextResponse.json(piece, { status: 201 });
   } catch (e) {
     console.error('POST /api/pieces failed:', e);

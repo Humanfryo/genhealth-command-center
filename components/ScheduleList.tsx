@@ -34,7 +34,7 @@ export function ScheduleList({ pieces }: { pieces: Piece[] }) {
   return (
     <section className="mt-11">
       <div className="mb-4 flex items-baseline justify-between">
-        <h2 className="text-[22px] font-extrabold tracking-[-0.025em]">Upcoming schedule</h2>
+        <h2 className="text-[22px] font-bold tracking-[-0.015em]" style={{ fontFamily: 'var(--font-display)' }}>Upcoming schedule</h2>
         <p className="text-[12.5px] text-[var(--muted)]">
           {scheduled.length} piece{scheduled.length === 1 ? '' : 's'} queued
         </p>

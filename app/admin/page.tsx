@@ -1,5 +1,6 @@
-import { listGenerations } from '@/lib/db';
+import { listGenerations, listDistillReports } from '@/lib/db';
 import { CHANNEL_LABELS, isChannel } from '@/lib/types';
+import { RunDistillButton } from '@/components/DistillPanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,9 +13,9 @@ function usd(n: number): string {
 }
 
 export default async function AdminPage() {
-  let logs;
+  let logs, reports;
   try {
-    logs = await listGenerations();
+    [logs, reports] = await Promise.all([listGenerations(), listDistillReports()]);
   } catch {
     return (
       <div className="rounded-[12px] border border-red-200 bg-red-50 p-6 text-sm text-red-700">
@@ -42,7 +43,7 @@ export default async function AdminPage() {
   return (
     <div>
       <div className="mb-[22px]">
-        <h1 className="text-[30px] font-extrabold tracking-[-0.03em]">Admin</h1>
+        <h1 className="text-[30px] font-bold tracking-[-0.02em]" style={{ fontFamily: 'var(--font-display)' }}>Admin</h1>
         <p className="text-[13.5px] text-[var(--muted)]">
           Every model call this tool has made — tokens, authoritative cost from the
           provider, duration. Cost awareness is a feature, not a report you run later.
@@ -96,7 +97,9 @@ export default async function AdminPage() {
                       minute: '2-digit',
                     })}
                   </td>
-                  <td className="px-4 py-2.5">{l.kind === 'topic_scan' ? 'News scan' : 'Draft'}</td>
+                  <td className="px-4 py-2.5">
+                    {l.kind === 'topic_scan' ? 'News scan' : l.kind === 'distill' ? 'Distill' : 'Draft'}
+                  </td>
                   <td className="px-4 py-2.5">
                     {isChannel(l.channel) ? CHANNEL_LABELS[l.channel] : '—'}
                   </td>
@@ -137,7 +140,60 @@ export default async function AdminPage() {
         </table>
       </div>
 
-      <p className="mt-4 text-[12px] text-[var(--muted)]">
+      {/* Voice distill */}
+      <div className="mt-10">
+        <div className="mb-2 flex items-center justify-between">
+          <h2
+            className="text-[22px] font-bold tracking-[-0.015em]"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            Voice distill
+          </h2>
+          <RunDistillButton />
+        </div>
+        <p className="mb-4 max-w-[720px] text-[13px] text-[var(--muted)]">
+          Every AI draft and every human edit is captured. The distill pass compares
+          what was drafted with what was actually saved, finds edits that recur across
+          independent pieces (one edit is a data point, never a rule), and proposes
+          voice-spec amendments — proposals a human merges, never auto-applied. Runs
+          weekly by cron, or on demand here.
+        </p>
+        {reports.length === 0 ? (
+          <p
+            className="rounded-[12px] border-dashed p-6 text-center text-[12.5px] text-[var(--muted)]"
+            style={{ borderWidth: '1.5px', borderColor: 'var(--line)' }}
+          >
+            No distill reports yet. Generate → save → edit → run distill.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {reports.map((r) => (
+              <details
+                key={r.id}
+                className="rounded-[14px] border border-[var(--line)] bg-[var(--card)] px-4 py-3"
+              >
+                <summary className="cursor-pointer text-[13.5px] font-semibold">
+                  {new Date(r.created_at).toLocaleString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                  })}
+                  <span className="ml-2 font-normal text-[var(--muted)]">
+                    · {r.pairs_analyzed} pair{r.pairs_analyzed === 1 ? '' : 's'} ·{' '}
+                    {r.cost_usd != null ? usd(Number(r.cost_usd)) : '—'}
+                  </span>
+                </summary>
+                <pre className="mt-3 whitespace-pre-wrap border-t border-[var(--soft)] pt-3 text-[12.5px] leading-relaxed text-[#212529]" style={{ fontFamily: 'var(--font-ui)' }}>
+                  {r.report_md}
+                </pre>
+              </details>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <p className="mt-8 text-[12px] text-[var(--muted)]">
         This page is deliberately open for the demo — a single-team tool the reviewers
         need to reach without a login wall. In production, auth goes in front of it first.
       </p>

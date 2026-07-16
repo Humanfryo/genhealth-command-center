@@ -40,7 +40,7 @@ export function PipelineView({ pieces }: { pieces: Piece[] }) {
       {/* Title row */}
       <div className="mb-[22px] flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-[30px] font-extrabold tracking-[-0.03em]">Pipeline</h1>
+          <h1 className="text-[30px] font-bold tracking-[-0.02em]" style={{ fontFamily: 'var(--font-display)' }}>Pipeline</h1>
           <p className="text-[13.5px] text-[var(--muted)]">
             {total} piece{total === 1 ? '' : 's'} in the library · {drafts} in progress
           </p>

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getPiece, updatePiece, deletePiece } from '@/lib/db';
+import { getPiece, updatePiece, deletePiece, logRevision } from '@/lib/db';
 import { isChannel, isStatus, type Piece } from '@/lib/types';
 
 type Params = { params: Promise<{ id: string }> };
@@ -50,6 +50,13 @@ export async function PATCH(req: Request, { params }: Params) {
 
     const updated = await updatePiece(id, patch);
     if (!updated) return NextResponse.json({ error: 'No such piece' }, { status: 404 });
+    // Body edits are the "after" half of the edit-distill loop.
+    if (typeof patch.body === 'string') {
+      await logRevision({
+        kind: 'human_save', piece_id: updated.id, channel: updated.channel,
+        topic: updated.topic, title: updated.title, body: updated.body,
+      });
+    }
     return NextResponse.json(updated);
   } catch (e) {
     console.error('PATCH /api/pieces/[id] failed:', e);

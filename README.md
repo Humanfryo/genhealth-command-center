@@ -50,7 +50,25 @@ Deliberately **no LLM in this path** ([`lib/lint.ts`](lib/lint.ts)): every flag 
 
 ## Design
 
-The UI was redesigned from a Claude Design handoff (in [`design_handoff_marketing_command_center/`](design_handoff_marketing_command_center/) — spec + working HTML prototype) and reimplemented in the app's existing stack. The whole interface themes from a single `--accent` CSS variable; type is Hanken Grotesk with JetBrains Mono for dates, counters, and the draft editor. The redesign also added live search, channel filter chips, and a distribution bar to the pipeline board, and moved the editor to a two-column layout with a sticky meta sidebar.
+The UI went through two rounds. First, a Claude Design handoff (in [`design_handoff_marketing_command_center/`](design_handoff_marketing_command_center/) — spec + working HTML prototype) reimplemented in the app's stack, which added live search, channel filter chips, the distribution bar, and the two-column editor. Then a **brand alignment pass to GenHealth's own design system, lifted from their production CSS**: their tokens (`--blue #0648C0`, `--bg #EEEEF1`, `--ink #0B0D10`), their type (Lexend for UI, Ibarra Real Nova for display headings, JetBrains Mono), and their black CTA buttons — so the tool looks like GenHealth's dashboard from the first click. The single-variable token architecture from round one is what made round two a cheap swap.
+
+## In-situ previews (the customer's view, not the dashboard's)
+
+The Preview tab renders each piece as the surface the *customer* sees, replicated in CSS from the real thing so text reflows live with unsaved edits:
+
+- **LinkedIn** — the actual feed card: LinkedIn's font stack on the `#f4f2ee` feed background, company header with Follow, hashtags and URLs tinted LinkedIn blue, a link-preview stub when the post carries a URL, and the Like/Comment/Repost/Send bar. No fabricated engagement counts — the frame is real, the numbers aren't ours to invent.
+- **Blog** — a genhealth.ai article page: their nav (with the black Book Demo button), serif `gh-h1`-style title in Ibarra Real Nova, date line, Lexend body.
+- **Email** — a Gmail-style message: inbox row showing exactly how the subject + preview text truncate, sender header, 600px body, the CTA slot as the button it maps to, standard newsletter footer.
+
+## The edit-distill loop (the voice profile that improves itself)
+
+Every AI draft (`ai_draft`) and every human save (`human_save`) is captured in `mcc_revisions`. The distill pass — weekly by cron, or on demand from `/admin` — pairs each raw draft with the latest human-edited version of the same piece and asks one question: *which edits recur across independent pieces?* Hard rules baked into the prompt: a pattern needs ≥2 independent occurrences (one edit is a data point, not a rule), thin data gets an honest "not enough signal yet," and the output is **proposed voice-spec amendments — a human merges them into `lib/voice.ts`; nothing self-modifies.** Reports are stored with their cost and listed in the admin panel. This is the same drafts-vs-edits distillation discipline behind the outbound system that produced the $587K pipeline result.
+
+## Publish handoffs
+
+- **Copy for {channel}** in the editor toolbar — LinkedIn post text, the full Mailchimp slot spec, or blog markdown.
+- **Send to Mailchimp** (email pieces): creates a *draft* campaign in a connected Mailchimp account — subject/preview/content mapped from the piece's slots, never auto-sent. Gated on `MAILCHIMP_API_KEY` (+ optional `MAILCHIMP_LIST_ID`); without a key the button shows its connect state. Standard Marketing API calls, untested until a real account is connected.
+- Direct LinkedIn publishing requires LinkedIn's Community Management API approval (legal-entity review + page-admin OAuth) — roadmap, same approval umbrella as impressions analytics.
 
 ## Channel preview
 

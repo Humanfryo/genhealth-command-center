@@ -33,7 +33,7 @@ export function LinkedInPulse() {
   return (
     <section className="mt-11">
       <div className="mb-1 flex items-baseline justify-between">
-        <h2 className="text-[22px] font-extrabold tracking-[-0.025em]">LinkedIn pulse</h2>
+        <h2 className="text-[22px] font-bold tracking-[-0.015em]" style={{ fontFamily: 'var(--font-display)' }}>LinkedIn pulse</h2>
         <p className="text-[12.5px] text-[var(--muted)]">
           public engagement · scraped {formatDate(pulse.scraped_at)}, 2026
         </p>

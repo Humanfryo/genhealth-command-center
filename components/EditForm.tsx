@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { Piece, Channel, Status } from '@/lib/types';
@@ -22,9 +22,41 @@ export function EditForm({ piece }: { piece: Piece }) {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [view, setView] = useState<'write' | 'preview'>('write');
+  const [copied, setCopied] = useState(false);
+  const [mcConfigured, setMcConfigured] = useState<boolean | null>(null);
+  const [mcState, setMcState] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (channel !== 'email') return;
+    fetch('/api/mailchimp')
+      .then((r) => r.json())
+      .then((d) => setMcConfigured(Boolean(d.configured)))
+      .catch(() => setMcConfigured(false));
+  }, [channel]);
+
+  async function sendToMailchimp() {
+    setMcState('Creating draft campaign…');
+    try {
+      const res = await fetch('/api/mailchimp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pieceId: piece.id }),
+      });
+      const data = await res.json();
+      setMcState(res.ok ? data.message : data.error);
+    } catch {
+      setMcState('Network hiccup. Retry.');
+    }
+  }
 
   const words = body.trim() ? body.trim().split(/\s+/).length : 0;
   const chars = body.length;
+
+  async function copyForChannel() {
+    await navigator.clipboard.writeText(body);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
 
   async function save() {
     if (status === 'scheduled' && !scheduledDate) {
@@ -132,12 +164,26 @@ export function EditForm({ piece }: { piece: Piece }) {
                   </button>
                 ))}
               </div>
-              <span
-                className="text-[12px] text-[var(--muted)]"
-                style={{ fontFamily: 'var(--font-mono)' }}
-              >
-                {words} words · {chars} chars
-              </span>
+              <div className="flex items-center gap-3">
+                <span
+                  className="text-[12px] text-[var(--muted)]"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                >
+                  {words} words · {chars} chars
+                </span>
+                <button
+                  onClick={copyForChannel}
+                  className="rounded-[8px] border border-[var(--line)] bg-white px-3 py-1.5 text-[12px] font-semibold text-[var(--ink)] transition-colors duration-150 hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                >
+                  {copied
+                    ? 'Copied ✓'
+                    : channel === 'linkedin'
+                      ? 'Copy for LinkedIn'
+                      : channel === 'email'
+                        ? 'Copy for Mailchimp'
+                        : 'Copy markdown'}
+                </button>
+              </div>
             </div>
             {view === 'write' ? (
               <textarea
@@ -151,8 +197,13 @@ export function EditForm({ piece }: { piece: Piece }) {
                 style={{ fontFamily: 'var(--font-mono)' }}
               />
             ) : (
-              <div className="max-h-[640px] min-h-[480px] overflow-y-auto px-[26px] py-6">
-                <PiecePreview channel={channel} title={title} body={body} />
+              <div className="max-h-[640px] min-h-[480px] overflow-y-auto bg-[var(--soft)] px-4 py-5 sm:px-6">
+                <PiecePreview
+                  channel={channel}
+                  title={title}
+                  body={body}
+                  scheduledDate={scheduledDate || null}
+                />
               </div>
             )}
           </div>
@@ -229,6 +280,21 @@ export function EditForm({ piece }: { piece: Piece }) {
             >
               {saving ? 'Saving…' : 'Save changes'}
             </button>
+            {channel === 'email' && (
+              <button
+                onClick={sendToMailchimp}
+                disabled={mcConfigured !== true}
+                title={
+                  mcConfigured === false
+                    ? 'Connect Mailchimp — add MAILCHIMP_API_KEY to enable'
+                    : undefined
+                }
+                className="w-full rounded-[11px] border border-[var(--line)] bg-white py-3 text-[14px] font-semibold text-[var(--ink)] transition-colors duration-150 hover:border-[var(--accent)] disabled:opacity-45"
+              >
+                {mcConfigured === false ? 'Send to Mailchimp (connect key)' : 'Send to Mailchimp'}
+              </button>
+            )}
+            {mcState && <p className="text-[12px] text-[var(--muted)]">{mcState}</p>}
             <button
               onClick={remove}
               disabled={deleting}
