@@ -56,6 +56,15 @@ The UI was redesigned from a Claude Design handoff (in [`design_handoff_marketin
 
 Every piece's edit page has an Edit/Preview toggle. Preview renders the body as the artifact it will become: the email's `SUBJECT:`/`PREVIEW:` slots render as an inbox row, the `CTA:` slot becomes the button it maps to in Mailchimp, blog outlines render their markdown, and LinkedIn pieces render as a post card. The markers exist because an email piece is a Mailchimp handoff spec — subject line, preview text, and button label are separate Mailchimp fields, so the tool keeps them as labeled slots instead of losing them in prose. The preview is live against unsaved edits.
 
+## LinkedIn pulse, cost admin, topic engine, tracked links
+
+Four features added inside the window after the core shipped:
+
+- **LinkedIn pulse** (home page): a snapshot of public engagement — reactions, comments, shares — for GenHealth's own LinkedIn page and competitors, scraped once via Apify (`harvestapi/linkedin-company-posts`, no cookies or account access). Honest labeling: it's public counts, not impressions, stamped with its scrape date. It's the working proof of the roadmap's monitoring pipeline — scheduled weekly, the same scrape becomes the competitor-intelligence and voice-calibration feed. Data lives in [`lib/data/linkedin-pulse.json`](lib/data/linkedin-pulse.json).
+- **Cost admin** (`/admin`): every model call logged with tokens, authoritative provider-reported cost, and duration — totals, averages, error rate, full call log. Open by design for the demo. (Apify spend is billed Apify-side and isn't in these totals.)
+- **Topic engine** (`/new`): deterministic suggestions computed from the regulatory calendar, plus a live news scan (OpenRouter web search) returning five sourced topic ideas, each click-to-prefill.
+- **Tracked link builder** (editor sidebar): UTM-tagged CTA links per piece, source/medium defaulted from the channel — because tagging discipline from day one is the precondition for every analytics feature on the roadmap.
+
 ## Known tradeoff: the endpoints are public
 
 This deployment has no login because the reviewers of this assessment need to click Generate without friction. That means the write endpoints are public: anyone with the URL could add or delete pieces, and the generate route spends real (rate-limited, topic-capped) API credits. For a real deployment, step one is Supabase Auth (the DB layer is already deny-all, so it's additive) or Vercel deployment protection. Choosing not to hide this tradeoff is part of the tool's thesis: honesty is the brand.

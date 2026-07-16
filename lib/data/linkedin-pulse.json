@@ -1,0 +1,157 @@
+{
+  "scraped_at": "2026-07-16",
+  "source": "Public LinkedIn company pages via Apify (harvestapi/linkedin-company-posts), one-shot run. Reactions/comments/shares are public counts — not impressions. Companies with no posts returned in the 6-month window are omitted.",
+  "companies_queried": ["genhealth-ai", "tennrai", "coherehealth"],
+  "posts": [
+    {
+      "company": "GenHealth.ai",
+      "handle": "genhealth-ai",
+      "snippet": "Where is your organization losing time, capacity, and revenue? Most healthcare organizations know they're spending too much on administrative work, but very few know exactly which workflows are costing them the most. That's why we're offering a free Workflow Audit…",
+      "url": "https://www.linkedin.com/posts/genhealth-ai_stop-guessing-your-operational-costs-unlock-activity-7481031175264960512-4UCr",
+      "date": "2026-07-09",
+      "likes": 17,
+      "comments": 0,
+      "shares": 6
+    },
+    {
+      "company": "GenHealth.ai",
+      "handle": "genhealth-ai",
+      "snippet": "Offshore staffing looks cheaper on paper. The full P&L tells a different story. Join us live as we break down the real comparison — hidden costs, operational gaps, and exactly how AI is changing the math.",
+      "url": "https://www.linkedin.com/posts/genhealth-ai_offshore-staffing-looks-cheaper-on-paper-activity-7445527596898983936-STKr",
+      "date": "2026-04-02",
+      "likes": 11,
+      "comments": 0,
+      "shares": 2
+    },
+    {
+      "company": "GenHealth.ai",
+      "handle": "genhealth-ai",
+      "snippet": "Question for DME leaders: When did you last stress test your offshore intake cost model? Not the base rate. The full model: QA oversight, retraining cycles, turnover, the denial rate premium that spikes every time someone leaves.",
+      "url": "https://www.linkedin.com/posts/genhealth-ai_ai-vs-offshore-the-real-cost-comparison-activity-7442253293017509889-qt35",
+      "date": "2026-03-24",
+      "likes": 8,
+      "comments": 1,
+      "shares": 3
+    },
+    {
+      "company": "GenHealth.ai",
+      "handle": "genhealth-ai",
+      "snippet": "We've taken over 1 Million actions on behalf of DME/HME suppliers this year alone. Now we're bringing the playbook to Waterloo! Find us at Booth 603 at the VGM Group Heartland Conference for live demos of our agents inside the systems your team already uses.",
+      "url": "https://www.linkedin.com/posts/genhealth-ai_vgmheartland-dme-rcm-activity-7469728793646006272-qtFr",
+      "date": "2026-06-08",
+      "likes": 5,
+      "comments": 0,
+      "shares": 1
+    },
+    {
+      "company": "GenHealth.ai",
+      "handle": "genhealth-ai",
+      "snippet": "What does a denied claim actually cost? Not just the reimbursement. The administrative hours. The delayed cash flow. The preventable rework. The downstream revenue leakage. Multiply that by hundreds or thousands of claims each month…",
+      "url": "https://www.linkedin.com/posts/genhealth-ai_stop-guessing-your-operational-costs-unlock-activity-7483565151363981314-WjF4",
+      "date": "2026-07-16",
+      "likes": 4,
+      "comments": 0,
+      "shares": 1
+    },
+    {
+      "company": "GenHealth.ai",
+      "handle": "genhealth-ai",
+      "snippet": "The biggest companies in the world are making moves based on what AI can do today, not what it might do tomorrow. DME providers are fighting on two fronts: operational costs AND an industry squeezing from every direction.",
+      "url": "https://www.linkedin.com/posts/genhealth-ai_ai-vs-offshore-the-real-cost-comparison-activity-7442644027851591681-nmeU",
+      "date": "2026-03-25",
+      "likes": 1,
+      "comments": 0,
+      "shares": 0
+    },
+    {
+      "company": "Cohere Health",
+      "handle": "coherehealth",
+      "snippet": "In a recent interview with Healthcare Finance News, Lalithya Yerramilli, Cohere Health's head of payment solutions, shares how AI is reshaping payer-provider collaboration by addressing inefficiencies and misaligned incentives.",
+      "url": "https://www.linkedin.com/posts/coherehealth_in-a-recent-interview-with-healthcare-finance-activity-7475986093629206528-Ek8Q",
+      "date": "2026-06-25",
+      "likes": 67,
+      "comments": 1,
+      "shares": 2
+    },
+    {
+      "company": "Cohere Health",
+      "handle": "coherehealth",
+      "snippet": "Site General Manager for Cohere Health India, Himanshu Gandhi, was recently featured in The Economic Times discussing India's rapidly growing Global Capability Centre (GCC) ecosystem.",
+      "url": "https://www.linkedin.com/posts/coherehealth_site-general-manager-for-cohere-health-india-activity-7478132752953815040-qYmR",
+      "date": "2026-07-01",
+      "likes": 42,
+      "comments": 0,
+      "shares": 2
+    },
+    {
+      "company": "Cohere Health",
+      "handle": "coherehealth",
+      "snippet": "Cohere Health has been named an \"Impactful GCC\" at ET Edge - The Times Group's 2026 GCC Summit, recognizing Cohere Health India's Global Innovation Centre for contributions to innovation, operational excellence, and talent development.",
+      "url": "https://www.linkedin.com/posts/coherehealth_cohere-health-has-been-named-an-impactful-activity-7474832991442358272-pR0v",
+      "date": "2026-06-22",
+      "likes": 30,
+      "comments": 0,
+      "shares": 6
+    },
+    {
+      "company": "Cohere Health",
+      "handle": "coherehealth",
+      "snippet": "The 2027 Medicare Advantage and Part D Final Rule is turning up the heat on Star Ratings. CMS is removing 11 measures and increasing the relative influence of clinical performance, including greater weight on HEDIS.",
+      "url": "https://www.linkedin.com/posts/coherehealth_the-2027-medicare-advantage-and-part-d-final-activity-7481050017500397569-iJJh",
+      "date": "2026-07-09",
+      "likes": 23,
+      "comments": 2,
+      "shares": 1
+    },
+    {
+      "company": "Cohere Health",
+      "handle": "coherehealth",
+      "snippet": "The latest edition of Cohere Insider is here — highlighting the expansion of the Cohere Unify platform beyond UM and payment integrity into appeals, care management, claims operations, and quality.",
+      "url": "https://www.linkedin.com/posts/coherehealth_the-latest-edition-of-cohere-insider-is-here-activity-7477421351318802432-pBvs",
+      "date": "2026-06-29",
+      "likes": 19,
+      "comments": 0,
+      "shares": 1
+    },
+    {
+      "company": "Cohere Health",
+      "handle": "coherehealth",
+      "snippet": "Quality gap closure gets harder when the evidence you need is buried in unstructured clinical documentation. If you're heading to RISE Qualipalooza next week, meet our team to explore how Cohere Capture helps health plans shift away from manual abstraction.",
+      "url": "https://www.linkedin.com/posts/coherehealth_quality-gap-closure-gets-harder-when-the-activity-7475256057892765696-LiFh",
+      "date": "2026-06-23",
+      "likes": 19,
+      "comments": 1,
+      "shares": 0
+    },
+    {
+      "company": "Cohere Health",
+      "handle": "coherehealth",
+      "snippet": "AI can accelerate payment integrity workflows at scale, but when health plans lack visibility into how findings are generated, trust can erode and slow adoption of the very tech designed to help them operate more efficiently.",
+      "url": "https://www.linkedin.com/posts/coherehealth_ai-can-accelerate-payment-integrity-workflows-activity-7477790575165886464-hV2R",
+      "date": "2026-06-30",
+      "likes": 18,
+      "comments": 0,
+      "shares": 1
+    },
+    {
+      "company": "Cohere Health",
+      "handle": "coherehealth",
+      "snippet": "\"The value of AI depends on responsible deployment, including transparency, deep clinical training, ongoing validation and continued physician oversight.\" — Cohere Health CMO Dr. Brian Covino in Medical Economics on a new standard for AI-driven UM.",
+      "url": "https://www.linkedin.com/posts/coherehealth_the-value-of-ai-depends-on-responsible-activity-7480341626398171136-o9li",
+      "date": "2026-07-07",
+      "likes": 16,
+      "comments": 0,
+      "shares": 4
+    },
+    {
+      "company": "Cohere Health",
+      "handle": "coherehealth",
+      "snippet": "As HEDIS transitions to year-round, full-population measurement, health plans face a critical challenge: scaling operational models without a proportional increase in manual effort.",
+      "url": "https://www.linkedin.com/posts/coherehealth_as-hedis-transitions-to-year-round-full-population-activity-7483551424442724352-BhBk",
+      "date": "2026-07-16",
+      "likes": 5,
+      "comments": 0,
+      "shares": 0
+    }
+  ]
+}

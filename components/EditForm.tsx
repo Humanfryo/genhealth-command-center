@@ -8,6 +8,7 @@ import { CHANNELS, CHANNEL_LABELS, STATUSES, STATUS_LABELS } from '@/lib/types';
 import { ChannelBadge, StatusBadge } from './StatusBadge';
 import { VoiceCheck } from './VoiceCheck';
 import { PiecePreview } from './PiecePreview';
+import { UtmBuilder } from './UtmBuilder';
 
 export function EditForm({ piece }: { piece: Piece }) {
   const router = useRouter();
@@ -239,6 +240,7 @@ export function EditForm({ piece }: { piece: Piece }) {
           </div>
 
           <VoiceCheck body={body} />
+          <UtmBuilder channel={channel} title={title} />
         </div>
       </div>
     </div>

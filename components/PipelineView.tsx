@@ -5,6 +5,7 @@ import type { Piece, Channel, Status } from '@/lib/types';
 import { CHANNEL_LABELS, STATUS_LABELS, STATUSES } from '@/lib/types';
 import { Board } from './Board';
 import { ScheduleList } from './ScheduleList';
+import { LinkedInPulse } from './LinkedInPulse';
 import { STATUS_COLORS } from './StatusBadge';
 
 const FILTERS: Array<{ key: Channel | 'all'; label: string }> = [
@@ -136,6 +137,9 @@ export function PipelineView({ pieces }: { pieces: Piece[] }) {
 
       {/* Upcoming schedule (always the full library, not filtered) */}
       <ScheduleList pieces={pieces} />
+
+      {/* Public LinkedIn engagement snapshot — ours vs competitors */}
+      <LinkedInPulse />
     </div>
   );
 }
