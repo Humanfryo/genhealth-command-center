@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import type { Piece, Channel, Status } from '@/lib/types';
 import { CHANNELS, CHANNEL_LABELS, STATUSES, STATUS_LABELS } from '@/lib/types';
 import { VoiceCheck } from './VoiceCheck';
+import { PiecePreview } from './PiecePreview';
 
 export function EditForm({ piece }: { piece: Piece }) {
   const router = useRouter();
@@ -17,6 +18,7 @@ export function EditForm({ piece }: { piece: Piece }) {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [view, setView] = useState<'edit' | 'preview'>('edit');
 
   async function save() {
     if (status === 'scheduled' && !scheduledDate) {
@@ -124,13 +126,34 @@ export function EditForm({ piece }: { piece: Piece }) {
         </div>
       </div>
 
-      <label className="mb-1 mt-4 block text-sm font-medium text-[#1A1D21]">Body</label>
-      <textarea
-        value={body}
-        onChange={(e) => { setBody(e.target.value); setSaved(false); }}
-        rows={18}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm leading-relaxed outline-none focus:border-teal-500"
-      />
+      <div className="mt-4 flex items-center justify-between">
+        <label className="block text-sm font-medium text-[#1A1D21]">Body</label>
+        <div className="flex gap-1 rounded-lg border border-slate-200 p-0.5">
+          {(['edit', 'preview'] as const).map((v) => (
+            <button
+              key={v}
+              onClick={() => setView(v)}
+              className={`rounded-md px-3 py-1 text-xs font-medium ${
+                view === v ? 'bg-[#0D9488] text-white' : 'text-slate-600 hover:text-teal-700'
+              }`}
+            >
+              {v === 'edit' ? 'Edit' : 'Preview'}
+            </button>
+          ))}
+        </div>
+      </div>
+      {view === 'edit' ? (
+        <textarea
+          value={body}
+          onChange={(e) => { setBody(e.target.value); setSaved(false); }}
+          rows={18}
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm leading-relaxed outline-none focus:border-teal-500"
+        />
+      ) : (
+        <div className="mt-1">
+          <PiecePreview channel={channel} title={title} body={body} />
+        </div>
+      )}
 
       {error && (
         <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">

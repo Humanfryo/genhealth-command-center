@@ -48,6 +48,10 @@ The voice spec started write-only: it constrained what the AI generates. The **V
 
 Deliberately **no LLM in this path** ([`lib/lint.ts`](lib/lint.ts)): every flag is deterministic, so the marketer can trust it completely. An advisory AI pass against the 12 voice rules is the natural next layer — but the trustworthy core comes first.
 
+## Channel preview
+
+Every piece's edit page has an Edit/Preview toggle. Preview renders the body as the artifact it will become: the email's `SUBJECT:`/`PREVIEW:` slots render as an inbox row, the `CTA:` slot becomes the button it maps to in Mailchimp, blog outlines render their markdown, and LinkedIn pieces render as a post card. The markers exist because an email piece is a Mailchimp handoff spec — subject line, preview text, and button label are separate Mailchimp fields, so the tool keeps them as labeled slots instead of losing them in prose. The preview is live against unsaved edits.
+
 ## Known tradeoff: the endpoints are public
 
 This deployment has no login because the reviewers of this assessment need to click Generate without friction. That means the write endpoints are public: anyone with the URL could add or delete pieces, and the generate route spends real (rate-limited, topic-capped) API credits. For a real deployment, step one is Supabase Auth (the DB layer is already deny-all, so it's additive) or Vercel deployment protection. Choosing not to hide this tradeoff is part of the tool's thesis: honesty is the brand.
